@@ -1091,20 +1091,20 @@ li { margin-bottom: 0.35rem; }
   margin-bottom: 1rem;
 }
 
-.quiz-question {
+#tab-quiz .quiz-question {
   background: #fff;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 1.25rem;
   margin-bottom: 1rem;
 }
 
-.quiz-question p {
+#tab-quiz .quiz-question p {
   font-weight: 600;
   margin-bottom: 0.75rem;
 }
 
-.quiz-question label {
+#tab-quiz .quiz-question label {
   display: block;
   padding: 0.6rem 0.75rem;
   margin: 0.25rem 0;
@@ -1115,27 +1115,27 @@ li { margin-bottom: 0.35rem; }
   font-size: 0.9rem;
 }
 
-.quiz-question label:hover {
-  background: #F9FAFB;
+#tab-quiz .quiz-question label:hover {
+  background: var(--off-bg);
   border-color: #D1D5DB;
 }
 
-.quiz-question label.correct {
+#tab-quiz .quiz-question label.correct {
   background: #D1FAE5;
   border-color: #10B981;
 }
 
-.quiz-question label.wrong {
+#tab-quiz .quiz-question label.wrong {
   background: #FEE2E2;
   border-color: #EF4444;
 }
 
-.quiz-submit {
+#tab-quiz .quiz-submit {
   display: inline-block;
-  background: #6A3DE8;
+  background: var(--primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 0.7rem 2rem;
   font-size: 0.95rem;
   font-weight: 600;
@@ -1144,16 +1144,16 @@ li { margin-bottom: 0.35rem; }
   margin-top: 0.5rem;
 }
 
-.quiz-submit:hover {
-  background: #4F29B8;
+#tab-quiz .quiz-submit:hover {
+  background: var(--primary-dark);
 }
 
-.quiz-submit:disabled {
+#tab-quiz .quiz-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.quiz-score {
+#tab-quiz .quiz-score {
   display: inline-block;
   background: #D1FAE5;
   color: #047857;
@@ -1164,19 +1164,19 @@ li { margin-bottom: 0.35rem; }
   margin-bottom: 1rem;
 }
 
-.quiz-reset {
+#tab-quiz .quiz-reset {
   background: transparent;
-  color: #6B7280;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
+  color: var(--text-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 0.7rem 1.5rem;
   font-size: 0.9rem;
   cursor: pointer;
   margin-left: 0.5rem;
 }
 
-.quiz-reset:hover {
-  background: #F9FAFB;
+#tab-quiz .quiz-reset:hover {
+  background: var(--off-bg);
 }
 
 /* === CALLOUT BOXES === */
