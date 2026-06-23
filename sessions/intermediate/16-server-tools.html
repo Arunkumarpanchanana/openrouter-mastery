@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 16: Server Tools — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/intermediate.html">Intermediate</a> <span>›</span>
+      Session 16
+    </div>
+    <h1>Session 16: Server Tools</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 35 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">💻 Intermediate</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="intermediate-16">
+      <input type="checkbox" id="complete-i16">
+      <label for="complete-i16" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>What Are Server Tools?</h3>
+      <p>Server tools are built-in capabilities that run on OpenRouter's side — no code, no agent loop, no infrastructure needed. You just add a <code>plugins</code> array to your request and the model can use them automatically.</p>
+
+      <h3>Available Server Tools</h3>
+      <ul>
+        <li><strong><code>web</code></strong> — The model can search the internet and return results with citations. Add <code>plugins: [{"id": "web"}]</code> to your request body.</li>
+        <li><strong><code>web_search</code></strong> — Legacy web search access (prefer <code>web</code> plugin for new implementations).</li>
+        <li><strong><code>fetch</code></strong> — The model can fetch content from a specific URL and use it as context for its response.</li>
+        <li><strong><code>datetime</code></strong> — The model knows the current date and time, useful for time-sensitive queries like "what events happened today?"</li>
+      </ul>
+
+      <h3>Why Server Tools Matter</h3>
+      <p>Server tools eliminate the need to write an agent loop. You don't need to define tool schemas, handle tool_calls, execute functions, or manage state. The model gets the capability built-in and uses it transparently. This works with any compatible model and requires zero infrastructure on your side.</p>
+
+      <h3>Plugin System</h3>
+      <p>The <code>plugins</code> array in your request body enables these capabilities. Simply set <code>plugins: [{"id": "web"}, {"id": "datetime"}]</code> to give the model access to both tools in a single request.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Use the web search plugin to get real-time information:</p>
+
+      <pre><code>python3 -c "
+import requests, os
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+# Web search with plugin
+resp = requests.post(url, headers=headers, json={
+    'model': 'openai/gpt-4o-mini:free',
+    'messages': [{'role': 'user', 'content': 'What are the latest developments in AI this month? Search the web and cite sources.'}],
+    'plugins': [{'id': 'web'}],
+})
+
+data = resp.json()
+print(data['choices'][0]['message']['content'])
+"</code></pre>
+
+      <p>Now test datetime awareness:</p>
+
+      <pre><code>python3 -c "
+import requests, os
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+resp = requests.post(url, headers=headers, json={
+    'model': 'openai/gpt-4o-mini:free',
+    'messages': [{'role': 'user', 'content': \"What's today's date and what day of the week is it?\"}],
+    'plugins': [{'id': 'datetime'}],
+})
+
+print(resp.json()['choices'][0]['message']['content'])
+"</code></pre>
+
+      <p><strong>Try this:</strong> Combine both plugins in a single request — ask for "news from today" and let the model use both web search and datetime together.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What are server tools in OpenRouter?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Functions you deploy on your own server</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Built-in capabilities that run on OpenRouter's side with no code needed</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Third-party API integrations you configure</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>SDK plugins for the OpenAI client</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Server tools are built into OpenRouter — you enable them with a plugins array, no code needed.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> How do you enable the web search server tool?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Set a special header</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Add <code>plugins: [{"id": "web"}]</code> to the request body</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Use the <code>:online</code> model variant</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Both b and c work for enabling web search</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>d</strong> — Both the plugins array with {"id": "web"} and the :online model variant enable web search.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What is the key advantage of server tools over client-side tool calling?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>They are faster than client tools</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>No agent loop to write — zero infrastructure on your side</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>They work with any model regardless of compatibility</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>They are free to use</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Server tools eliminate the need to write tool definitions, handle tool_calls, or run any agent loop.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What does the <code>datetime</code> server tool provide?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Date formatting utilities</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Current date and time so the model can answer time-sensitive queries</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Calendar scheduling functionality</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Timezone conversion</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The datetime plugin gives the model awareness of the current date and time.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> Can you use multiple server tools in a single request?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>No, only one plugin at a time</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Yes, add multiple plugin objects to the plugins array</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Only if you use the :online model variant</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Only paid plans support multiple plugins</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — You can enable multiple tools by adding multiple plugin objects, e.g., <code>plugins: [{"id": "web"}, {"id": "datetime"}]</code>.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="15-model-variants.html" class="btn btn-outline">← Previous: Model Variants</a>
+      <a href="17-multimodal-inputs.html" class="btn btn-primary">Next: Multimodal Inputs →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

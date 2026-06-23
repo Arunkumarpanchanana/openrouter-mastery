@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 08: Streaming Basics — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/beginner.html">Beginner</a> <span>›</span>
+      Session 08
+    </div>
+    <h1>Session 08: Streaming Basics</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 30 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🌱 Beginner</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="beginner-08">
+      <input type="checkbox" id="complete-b08">
+      <label for="complete-b08" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>What is Streaming?</h3>
+      <p>Streaming uses Server-Sent Events (SSE) to send the response back in chunks as the model generates it, instead of waiting for the full response. Each chunk contains a <code>delta</code> (partial content) rather than a complete <code>message</code>.</p>
+
+      <h3>Why Stream?</h3>
+      <p>Time-to-first-token drops from seconds to milliseconds. Users see text appearing as it's generated, creating a much better experience. For long responses, this is dramatically faster than waiting for the full generation to complete.</p>
+
+      <h3>SSE Format</h3>
+      <p>Each chunk arrives as a <code>data: {...json...}\n\n</code> line. The stream ends with a special <code>data: [DONE]</code> signal. Comment payloads like <code>: OPENROUTER PROCESSING</code> can appear between chunks — these are safe to ignore and prevent timeout.</p>
+
+      <h3>Final Chunk</h3>
+      <p>The last chunk before <code>[DONE]</code> includes <code>usage</code> data (token counts, cost) with empty <code>choices</code>. Capture this to log your metrics.</p>
+
+      <h3>Mid-Stream Errors</h3>
+      <p>If a provider fails mid-stream, the error appears as an SSE event with <code>finish_reason: "error"</code>. OpenRouter's zero-completion insurance means you aren't billed for partial responses.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Stream a response character by character to see SSE in action:</p>
+
+      <pre><code>python3 -c "
+import requests, json, os
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {
+    'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}',
+    'Content-Type': 'application/json',
+}
+payload = {
+    'model': 'openai/gpt-4o-mini:free',
+    'messages': [{'role': 'user', 'content': 'Count from 1 to 5 with a fun fact about each number.'}],
+    'stream': True,
+}
+
+buffer = ''
+with requests.post(url, headers=headers, json=payload, stream=True) as r:
+    for chunk in r.iter_content(chunk_size=1024, decode_unicode=True):
+        buffer += chunk
+        while '\n' in buffer:
+            line, buffer = buffer.split('\n', 1)
+            line = line.strip()
+            if line.startswith('data: '):
+                data = line[6:]
+                if data == '[DONE]':
+                    print('\n\n[DONE]')
+                    break
+                try:
+                    parsed = json.loads(data)
+                    content = parsed['choices'][0]['delta'].get('content', '')
+                    print(content, end='', flush=True)
+                    if parsed.get('usage'):
+                        print(f'\n\nUsage: {parsed[\"usage\"]}')
+                except json.JSONDecodeError:
+                    pass
+"</code></pre>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What protocol does streaming use?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>WebSockets</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Server-Sent Events (SSE)</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>HTTP/2 push</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>gRPC streaming</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — OpenRouter uses SSE (Server-Sent Events) for streaming responses.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> In a streaming response, how is partial content delivered?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>In the <code>message.content</code> field</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>In the <code>delta</code> field of each chunk</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>In the <code>finish_reason</code> field</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>As raw text without JSON framing</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Each SSE chunk contains a <code>delta</code> object with partial content.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What signals the end of a stream?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>A 200 status code</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>An empty response body</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>The <code>data: [DONE]</code> signal</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>A null value in the choices array</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — The stream ends with a <code>data: [DONE]</code> line.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What is the main benefit of streaming?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Lower total cost</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Lower time-to-first-token — users see output immediately</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Higher quality responses</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Reduced token usage</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Streaming dramatically reduces time-to-first-token, improving user experience.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> What happens if a provider fails mid-stream?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>The connection hangs indefinitely</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>The error appears as an SSE event with finish_reason: "error"</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>You're billed for the full max_tokens</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>The request automatically retries</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Mid-stream errors are reported via SSE with <code>finish_reason: "error"</code>, and you aren't billed for partial output.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="07-error-handling.html" class="btn btn-outline">← Previous: Error Handling</a>
+      <a href="09-model-switching.html" class="btn btn-primary">Next: Model Switching & Free Tier →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

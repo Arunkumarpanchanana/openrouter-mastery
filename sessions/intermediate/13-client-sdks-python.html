@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 13: Client SDKs (Python) — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/intermediate.html">Intermediate</a> <span>›</span>
+      Session 13
+    </div>
+    <h1>Session 13: Client SDKs (Python)</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 35 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">💻 Intermediate</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="intermediate-13">
+      <input type="checkbox" id="complete-i13">
+      <label for="complete-i13" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>OpenRouter Is OpenAI-Compatible</h3>
+      <p>OpenRouter speaks the OpenAI API protocol. This means you can use the official OpenAI Python SDK — just change the <code>base_url</code> to <code>https://openrouter.ai/api/v1</code>. All your existing OpenAI code works with hundreds of models from dozens of providers.</p>
+
+      <h3>Why Use the SDK?</h3>
+      <p>The SDK provides several advantages over raw HTTP requests:</p>
+      <ul>
+        <li><strong>Type safety</strong> — Pydantic models with autocomplete and validation</li>
+        <li><strong>Error handling</strong> — Specific exception types for auth failures, rate limits, connection errors</li>
+        <li><strong>Streaming helpers</strong> — First-class streaming support with iterators</li>
+        <li><strong>Less boilerplate</strong> — No manual header construction, JSON parsing, or response handling</li>
+      </ul>
+
+      <h3>Installation & Configuration</h3>
+      <p>Install with <code>pip install openai</code>. Configure with:</p>
+      <pre><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="sk-or-v1-...",
+)</code></pre>
+
+      <h3>OpenRouter-Specific Headers</h3>
+      <p>Add app attribution headers to help OpenRouter identify your application:</p>
+      <ul>
+        <li><strong><code>HTTP-Referer</code></strong> — Your app's URL (shown on OpenRouter leaderboards)</li>
+        <li><strong><code>X-OpenRouter-Title</code></strong> — Your app's display name</li>
+      </ul>
+
+      <h3>Error Types</h3>
+      <p>The OpenAI SDK raises specific exceptions for different failure modes:</p>
+      <ul>
+        <li><strong><code>AuthenticationError</code></strong> — Invalid or missing API key</li>
+        <li><strong><code>RateLimitError</code></strong> — Too many requests, hit rate limit</li>
+        <li><strong><code>APIConnectionError</code></strong> — Network issue connecting to the API</li>
+        <li><strong><code>APIStatusError</code></strong> — Any other API error with status code</li>
+      </ul>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Rebuild a simple CLI interaction using the OpenAI SDK:</p>
+
+      <pre><code>python3 -c "
+from openai import OpenAI
+import os
+
+client = OpenAI(
+    base_url='https://openrouter.ai/api/v1',
+    api_key=os.environ['OPENROUTER_API_KEY'],
+)
+
+# Add app attribution
+client.headers.update({
+    'HTTP-Referer': 'https://openroutermastery.dev',
+    'X-OpenRouter-Title': 'OpenRouter Mastery',
+})
+
+response = client.chat.completions.create(
+    model='openai/gpt-4o-mini:free',
+    messages=[{'role': 'user', 'content': \"What's the capital of Japan?\"}],
+    temperature=0.3,
+    max_tokens=200,
+)
+
+print(f'Model: {response.model}')
+print(f'Response: {response.choices[0].message.content}')
+print(f'Usage: {response.usage}')
+"</code></pre>
+
+      <p>Now test error handling:</p>
+
+      <pre><code>python3 -c "
+from openai import OpenAI, AuthenticationError, RateLimitError
+
+try:
+    bad_client = OpenAI(
+        base_url='https://openrouter.ai/api/v1',
+        api_key='bad-key'
+    )
+    bad_client.chat.completions.create(
+        model='openai/gpt-4o-mini:free',
+        messages=[{'role':'user','content':'hi'}]
+    )
+except AuthenticationError as e:
+    print(f'Auth error caught: {e}')
+"</code></pre>
+
+      <p><strong>Try this:</strong> Use the SDK to make a streaming request (<code>stream=True</code>) and iterate over the response chunks. Compare the code to the manual streaming from the beginner track.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> Why can you use the OpenAI Python SDK with OpenRouter?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>OpenRouter is built by OpenAI</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>OpenRouter is OpenAI-compatible — same API protocol</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>OpenRouter provides its own Python SDK</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Only OpenAI models work with the SDK</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — OpenRouter implements the same API protocol as OpenAI, so the OpenAI SDK works with a different base_url.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> What URL should you set as <code>base_url</code> to use OpenRouter with the OpenAI SDK?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>https://api.openrouter.ai/v1</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>https://openrouter.ai/api/v1</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>https://openrouter.ai/v1</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>https://api.openai.com/v1</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The OpenRouter API base URL is https://openrouter.ai/api/v1.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What is NOT a benefit of using the SDK over raw HTTP requests?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Type safety with Pydantic models</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Specific exception types for different errors</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Faster API response times</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Less boilerplate code</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — The SDK doesn't make the API faster. It provides better developer experience through type safety, error handling, and less boilerplate.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> Which exception type should you catch for an invalid API key?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>RateLimitError</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>APIConnectionError</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>AuthenticationError</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>APIStatusError</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — AuthenticationError is raised when the API key is invalid or missing.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> What do the HTTP-Referer and X-OpenRouter-Title headers do?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>They enable streaming responses</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>They configure proxy routing</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>They provide app attribution for leaderboards and analytics</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>They override the model selection</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — These headers identify your application on OpenRouter's leaderboards and analytics dashboards.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="12-tool-calling-function-use.html" class="btn btn-outline">← Previous: Tool Calling & Function Use</a>
+      <a href="14-provider-routing-fallbacks.html" class="btn btn-primary">Next: Provider Routing & Fallbacks →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

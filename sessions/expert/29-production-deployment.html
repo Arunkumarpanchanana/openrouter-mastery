@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 29: Production Deployment — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/expert.html">Expert</a> <span>›</span>
+      Session 29
+    </div>
+    <h1>Session 29: Production Deployment</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 40 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🚀 Expert</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="expert-29">
+      <input type="checkbox" id="complete-e29">
+      <label for="complete-e29" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>Retry Strategies</h3>
+      <p>Production systems must handle failure gracefully. Implement <strong>exponential backoff with jitter</strong> — each retry waits longer than the last, with random jitter to prevent thundering herd problems. Set a max of 3-5 retries before failing. Use the <strong>circuit breaker pattern</strong> to stop calling a failing provider entirely after repeated errors.</p>
+
+      <h3>Latency Optimization</h3>
+      <p>Use the <code>:nitro</code> variant for the fastest available throughput. Set <code>preferred_max_latency</code> thresholds to exclude providers that can't meet your timing requirements. Use <code>provider.sort: "latency"</code> to automatically route to the fastest provider for each request.</p>
+
+      <h3>Uptime Optimization</h3>
+      <p>Provide <strong>model fallbacks</strong> — an array of backup models that OpenRouter tries if the primary is unavailable. Use <strong>provider fallbacks</strong> so if one provider for a model is down, another provider serves the request. Set <code>allow_fallbacks: true</code> to enable automatic fallback routing.</p>
+
+      <h3>Rate Limit Management</h3>
+      <p>Always respect the <code>Retry-After</code> header when you receive a 429 response. Implement client-side rate limiting to avoid hitting limits in the first place. Batch non-urgent requests during off-peak hours to stay within quota.</p>
+
+      <h3>Provider-Specific Limits</h3>
+      <p>Different providers have different rate limits. Check <code>per_request_limits</code> in the models data to understand constraints before routing. Some providers may offer higher limits at higher price tiers.</p>
+
+      <h3>The X-OpenRouter-Metadata Header</h3>
+      <p>Opt into detailed routing information per request by sending this header. You'll receive metadata about which provider handled the request, what fallbacks were attempted, and the routing decision chain — essential for debugging production issues.</p>
+
+      <h3>Monitoring & Scaling</h3>
+      <p>Use Broadcast for observability and track generation IDs for auditing individual requests. OpenRouter auto-scales on its end — you only need to manage your client-side concurrency. Monitor your error rates and latency trends to detect issues early.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Build a production-ready request function with retries, fallbacks, and timeout handling:</p>
+
+      <pre><code>python3 -c "
+import requests, os, time, random
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+def production_call(messages, models=None, max_retries=3, timeout=30):
+    payload = {
+        'messages': messages,
+        'max_tokens': 500,
+    }
+    if models:
+        payload['models'] = models  # fallback models
+    else:
+        payload['model'] = 'openai/gpt-4o-mini:free'
+
+    payload['provider'] = {'sort': 'latency'}  # prioritize speed
+
+    for attempt in range(max_retries):
+        try:
+            resp = requests.post(url, headers=headers, json=payload, timeout=timeout)
+
+            if resp.status_code == 200:
+                return resp.json()
+
+            if resp.status_code == 429:
+                retry_after = int(resp.headers.get('Retry-After', 2 ** attempt))
+                jitter = random.uniform(0, 0.5 * retry_after)
+                print(f'Rate limited. Waiting {retry_after + jitter:.1f}s...')
+                time.sleep(retry_after + jitter)
+                continue
+
+            if resp.status_code in (502, 503):
+                wait = (2 ** attempt) + random.uniform(0, 1)
+                print(f'Provider error {resp.status_code}. Retry {attempt+1}/{max_retries} in {wait:.1f}s...')
+                time.sleep(wait)
+                continue
+
+            raise Exception(f'HTTP {resp.status_code}: {resp.text[:200]}')
+
+        except requests.Timeout:
+            if attempt < max_retries - 1:
+                print(f'Timeout on attempt {attempt+1}. Retrying...')
+                continue
+            raise
+
+    raise Exception('Max retries exceeded')
+
+result = production_call([{'role': 'user', 'content': 'What is production deployment?'}])
+print(result['choices'][0]['message']['content'])
+"</code></pre>
+
+      <p><strong>Try this:</strong> Add model fallbacks by passing <code>models=["openai/gpt-4o-mini:free", "google/gemini-2.0-flash-exp:free"]</code>. Simulate a provider outage by using an invalid model and observe the fallback behavior.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What is the recommended retry strategy for production API calls?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Retry immediately with the same request up to 10 times</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Exponential backoff with jitter and a max of 3-5 retries</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Never retry — always fail fast</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Double the request timeout on each retry</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Exponential backoff with jitter prevents thundering herds while giving the provider time to recover, with a reasonable cap on total retries.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> How do you optimize for latency on OpenRouter?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Use provider.sort: 'latency' and set preferred_max_latency thresholds</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Always use the most expensive model for fastest response</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Send all requests at midnight</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Disable all headers to reduce request size</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>a</strong> — Sorting by latency and setting max latency thresholds routes to the fastest providers automatically.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> How do you improve uptime with OpenRouter?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Use a single reliable provider only</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Provide model fallbacks, provider fallbacks, and set allow_fallbacks: true</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Send duplicate requests and deduplicate responses</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Cache all responses indefinitely</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Fallback mechanisms at the model and provider level ensure your application stays up even when individual providers or models are unavailable.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What should you do when you receive a 429 (rate limited) response?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Retry immediately — it might be a transient error</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Ignore it and continue sending requests</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Respect the Retry-After header before retrying</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Switch to a different API endpoint</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — The Retry-After header tells you how long to wait before retrying. Respecting it prevents further rate limiting and allows the system to recover.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> What is the X-OpenRouter-Metadata header used for?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>To authenticate requests with a secondary API key</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>To opt into detailed routing information per request for debugging</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>To set custom metadata on the response content</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>To enable response streaming</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — This header requests detailed routing metadata including which provider was selected, fallbacks attempted, and the routing decision chain.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="28-evals-benchmarks.html" class="btn btn-outline">← Previous: Evals & Benchmarks</a>
+      <a href="30-advanced-server-tools.html" class="btn btn-primary">Next: Advanced Server Tools →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

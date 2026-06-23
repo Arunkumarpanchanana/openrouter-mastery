@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 15: Model Variants — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/intermediate.html">Intermediate</a> <span>›</span>
+      Session 15
+    </div>
+    <h1>Session 15: Model Variants</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 30 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">💻 Intermediate</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="intermediate-15">
+      <input type="checkbox" id="complete-i15">
+      <label for="complete-i15" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>Model Variant Suffixes</h3>
+      <p>OpenRouter appends variant suffixes to model slugs after a colon. These modify how the model behaves or which providers are chosen. The format is <code>provider/model:variant</code>, e.g., <code>openai/gpt-4o-mini:free</code>.</p>
+
+      <h3>Available Variants</h3>
+      <ul>
+        <li><strong><code>:free</code></strong> — Zero-cost inference on select community models. Rate limited, no API key billing required.</li>
+        <li><strong><code>:nitro</code></strong> — Sorts by throughput (highest tokens/second). Equivalent to <code>provider.sort: "throughput"</code>.</li>
+        <li><strong><code>:floor</code></strong> — Sorts by price (cheapest first). Equivalent to <code>provider.sort: "price"</code>.</li>
+        <li><strong><code>:extended</code></strong> — Uses providers with extended context windows. May cost more per token.</li>
+        <li><strong><code>:thinking</code></strong> — Enables extended reasoning and reasoning tokens for compatible models (like Claude 3 Sonnet thinking).</li>
+        <li><strong><code>:online</code></strong> — Enables real-time web search capabilities. The model can search the web and cite sources.</li>
+        <li><strong><code>:exacto</code></strong> — Prefers providers with stronger tool-calling quality signals.</li>
+      </ul>
+
+      <h3>How Variants Work</h3>
+      <p>Variants are shorthand for provider routing configuration. <code>:nitro</code> and <code>:floor</code> map directly to <code>provider.sort</code> options. <code>:online</code> and <code>:thinking</code> enable specific model capabilities. <code>:free</code> restricts to zero-cost providers.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Compare the same type of task across different free model variants:</p>
+
+      <pre><code>python3 -c "
+import requests, os
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+variants = [
+    'openai/gpt-4o-mini:free',
+    'meta-llama/llama-3.1-8b-instruct:free',
+    'microsoft/phi-3-mini-128k-instruct:free',
+]
+
+for variant in variants:
+    resp = requests.post(url, headers=headers, json={
+        'model': variant,
+        'messages': [{'role': 'user', 'content': 'Write a haiku about AI'}],
+        'max_tokens': 100,
+    })
+    data = resp.json()
+    print('=' * 40)
+    print(f'Model: {variant}')
+    print(f\"Content: {data['choices'][0]['message']['content']}\")
+"</code></pre>
+
+      <p><strong>Try this:</strong> Compare the same model with and without the <code>:extended</code> variant on a long-context task. Or test <code>:nitro</code> vs default routing and measure the latency difference.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What does the <code>:free</code> variant do?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Removes all rate limits</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Provides zero-cost inference on select community models</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Gives unlimited API credits</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Bypasses authentication</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The :free variant routes to community-hosted models at no cost, though rate limits apply.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> What is the <code>:nitro</code> variant equivalent to in provider routing?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>provider.sort: "price"</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>provider.sort: "throughput"</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>provider.order: ["openai"]</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>allow_fallbacks: false</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — :nitro is equivalent to provider.sort: "throughput", prioritizing the fastest providers.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> Which variant enables real-time web search?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>:nitro</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>:thinking</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>:online</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>:extended</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — :online enables real-time web search, allowing the model to search and cite sources.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What does <code>:exacto</code> prioritize?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Lowest price</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Highest throughput</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Providers with stronger tool-calling quality signals</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Longest context windows</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — :exacto prefers providers that have demonstrated higher tool-calling reliability.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> Which variant is equivalent to <code>provider.sort: "price"</code>?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>:free</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>:floor</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>:nitro</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>:extended</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — :floor sorts providers by price (cheapest first), equivalent to provider.sort: "price".</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="14-provider-routing-fallbacks.html" class="btn btn-outline">← Previous: Provider Routing & Fallbacks</a>
+      <a href="16-server-tools.html" class="btn btn-primary">Next: Server Tools →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

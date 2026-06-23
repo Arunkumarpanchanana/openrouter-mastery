@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 22: Cost Optimization Architecture — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/expert.html">Expert</a> <span>›</span>
+      Session 22
+    </div>
+    <h1>Session 22: Cost Optimization Architecture</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 40 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🚀 Expert</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="expert-22">
+      <input type="checkbox" id="complete-e22">
+      <label for="complete-e22" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>The Core Insight</h3>
+      <p>Not every step in your pipeline needs a frontier model. The key to cost optimization is breaking your workflow into discrete steps and assigning the right model to each. A classification step that maps input to one of five categories doesn't need Claude Sonnet — a $0.15/M token model works just as well.</p>
+
+      <h3>Workflow Decomposition</h3>
+      <p>Identify which steps need <strong>reasoning</strong> (use expensive models) and which need <strong>pattern matching or fast processing</strong> (use cheap models). For example:</p>
+      <ul>
+        <li><strong>Intent classification</strong> → free/mini model</li>
+        <li><strong>Entity extraction</strong> → cheap model with structured outputs</li>
+        <li><strong>Complex reasoning</strong> → frontier model (Claude, GPT-4o)</li>
+        <li><strong>Response formatting</strong> → cheap model or template</li>
+      </ul>
+
+      <h3>Total Cost Calculation</h3>
+      <p>The formula is simple: <code>(prompt_tokens × prompt_price) + (completion_tokens × completion_price)</code>. Both sides matter — a model with cheap prompt pricing but expensive completion pricing may cost more than expected if your use case generates long responses. Always calculate total cost, not just per-token rates.</p>
+
+      <h3>Model Tier Strategy</h3>
+      <p>Classify tasks into tiers and assign models accordingly:</p>
+      <ul>
+        <li><strong>Simple:</strong> Free models or $0.15/M tokens — classification, extraction, formatting</li>
+        <li><strong>Medium:</strong> GPT-4o-mini class — summarization, structured generation</li>
+        <li><strong>Complex:</strong> Claude Sonnet / GPT-4o class — reasoning, analysis, code generation</li>
+      </ul>
+
+      <h3>Provider Sorting & Limits</h3>
+      <p>Use <code>provider.sort: "price"</code> with <code>max_price</code> limits to cap costs automatically. OpenRouter will try providers in ascending price order. The <code>:free</code> and <code>:floor</code> variants route to the cheapest available endpoints.</p>
+
+      <h3>The 80/20 Rule</h3>
+      <p>80% of your costs likely come from 20% of your requests. Profile your usage and optimize those expensive paths first. A single unoptimized reasoning chain can cost more than hundreds of cheap classification calls.</p>
+
+      <h3>Batch APIs</h3>
+      <p>For non-latency-sensitive work, use batch APIs to get a flat discount. Send multiple requests at once and get results asynchronously — ideal for data processing pipelines, content generation at scale, and backfills.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Profile a multi-step pipeline and analyze its costs:</p>
+
+      <pre><code>python3 -c "
+import requests, os, json
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+# Get pricing for different models
+resp = requests.get('https://openrouter.ai/api/v1/models')
+models_data = {m['id']: m for m in resp.json()['data']}
+
+models_to_check = [
+    'openai/gpt-4o-mini:free',
+    'openai/gpt-4o',
+    'anthropic/claude-sonnet-4',
+]
+
+for model_id in models_to_check:
+    m = models_data.get(model_id)
+    if m:
+        prompt_price = float(m['pricing']['prompt']) * 1_000_000
+        completion_price = float(m['pricing']['completion']) * 1_000_000
+        print(f'{model_id}: \${prompt_price:.4f}/M input, \${completion_price:.4f}/M output, {m.get(\"context_length\", \"?\")} context')
+
+# Simulate cost for a pipeline
+pipeline_steps = [
+    {'name': 'Classify intent', 'model': 'openai/gpt-4o-mini:free', 'prompt_tokens': 500, 'completion_tokens': 50},
+    {'name': 'Extract entities', 'model': 'openai/gpt-4o-mini:free', 'prompt_tokens': 800, 'completion_tokens': 100},
+    {'name': 'Generate response', 'model': 'openai/gpt-4o', 'prompt_tokens': 2000, 'completion_tokens': 500},
+]
+
+total_cost = 0
+for step in pipeline_steps:
+    m = models_data.get(step['model'])
+    if m:
+        cost = (step['prompt_tokens'] * float(m['pricing']['prompt']) +
+                step['completion_tokens'] * float(m['pricing']['completion']))
+        total_cost += cost
+        print(f'  {step[\"name\"]}: \${cost:.6f}')
+
+print(f'\nTotal pipeline cost: \${total_cost:.6f}')
+"</code></pre>
+
+      <p><strong>Try this:</strong> Add a fourth step that uses a cheap model for response formatting. Experiment with different model assignments and see how much you can save by moving simple steps to cheaper models.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What is the formula for total cost of an API call?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>prompt_tokens × prompt_price</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>completion_tokens × completion_price</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>(prompt_tokens × prompt_price) + (completion_tokens × completion_price)</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>total_tokens × average_price</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — Both prompt and completion tokens have separate prices. Total cost is the sum of both sides.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> What is the core principle of workflow decomposition for cost optimization?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Always use the cheapest model for every step</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Break the workflow into steps and assign the right model tier to each</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Use one frontier model for everything to ensure quality</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Cache all responses regardless of content</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Decompose workflows and match model capability to each step's actual needs, not a one-size-fits-all approach.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> Which of the following is an example of a good model tier strategy?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Using Claude Opus for simple intent classification</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Using a free/mini model for classification, a mid-tier model for extraction, and a frontier model for complex reasoning</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Using only free models for all tasks</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Rotating between models randomly</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Tiered model strategy assigns appropriate capability levels to each task type, balancing cost and quality.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What does <code>provider.sort: "price"</code> do?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Sorts models alphabetically by name</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Routes requests to providers in ascending price order</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Increases the price of all requests</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Disables price sorting for faster response</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — It tries providers from cheapest to most expensive, automatically routing to the lowest-cost option.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> When should you use batch APIs?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>For real-time chat applications that need sub-second responses</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>For non-latency-sensitive work like data processing and backfills</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>For streaming responses to end users</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>For interactive agent loops</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Batch APIs offer flat discounts for asynchronous, non-latency-sensitive workloads like data processing at scale.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="../intermediate/21-intermediate-capstone.html" class="btn btn-outline">← Previous: Capstone: Multi-Tool Research Agent</a>
+      <a href="23-advanced-routing.html" class="btn btn-primary">Next: Advanced Routing →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

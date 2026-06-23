@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 24: Agent SDK Deep Dive — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/expert.html">Expert</a> <span>›</span>
+      Session 24
+    </div>
+    <h1>Session 24: Agent SDK Deep Dive</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 50 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🚀 Expert</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="expert-24">
+      <input type="checkbox" id="complete-e24">
+      <label for="complete-e24" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>OpenRouter Agent SDK</h3>
+      <p>The <code>@openrouter/agent</code> SDK is a TypeScript library for building production-grade agents. It provides core abstractions for model interaction, tool execution, streaming, and loop control — all with first-class TypeScript support.</p>
+
+      <h3>callModel</h3>
+      <p><code>callModel</code> is the core function that handles text generation, streaming, and tool calling with automatic execution. You provide messages, tools, and stop conditions — the SDK manages the loop, streams responses, executes tool calls, and feeds results back to the model automatically.</p>
+
+      <h3>Items-Based Streaming</h3>
+      <p>The items-based streaming paradigm is unique to the Agent SDK. Instead of accumulating chunks of text, you <strong>replace items by ID</strong>. Each item (a message, a tool result, a status update) has a unique ID. When new data arrives for that ID, the old content is replaced. This simplifies React state management enormously — no more merging partial chunks or tracking cursor positions.</p>
+
+      <h3>Stop Conditions</h3>
+      <p>The <code>stopWhen</code> helper lets you define conditions to halt agent execution: stop by step count, number of tool calls, accumulated cost, or token budget. No more infinite loops or runaway costs. You can combine conditions — stop after 10 steps OR after \$0.05 in costs, whichever comes first.</p>
+
+      <h3>nextTurnParams</h3>
+      <p><code>nextTurnParams</code> enables building encapsulated, context-aware tools. Each turn can pass parameters to the next, creating a chain of context. This is the foundation for plugin systems, adaptive agents that change behavior based on previous turns, and multi-step workflows that maintain state across interactions.</p>
+
+      <h3>Tool Types</h3>
+      <p>The SDK supports multiple tool types:</p>
+      <ul>
+        <li><strong>Regular tools</strong> — Define with Zod schema for type-safe arguments</li>
+        <li><strong>Generator tools</strong> — Async generators that yield progress updates</li>
+        <li><strong>Manual tools</strong> — Human-in-the-loop (HITL) tools that pause and wait for approval</li>
+        <li><strong>Multi-turn tools</strong> — Tools that span multiple agent turns, collecting information progressively</li>
+      </ul>
+
+      <h3>Tool Approval</h3>
+      <p>Human-in-the-loop gates for sensitive operations. Define which tools require manual approval before execution. When the model calls an approval-gated tool, execution pauses and waits for a human to confirm. This is critical for production systems that need guardrails around dangerous or expensive operations.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Explore the Agent SDK's items-based streaming pattern — how it differs from traditional streaming:</p>
+
+      <p>The key difference is in how state is managed:</p>
+
+      <pre><code>// Traditional streaming — accumulate chunks
+let fullContent = '';
+stream.onChunk((chunk) => {
+  fullContent += chunk;
+  setState(prev => prev + chunk);
+});
+
+// Items-based streaming — replace by ID
+const items = {};
+
+stream.onItem((item) => {
+  items[item.id] = item.content;  // Replace, don't append
+  setState({ ...items });         // React re-renders cleanly
+});</code></pre>
+
+      <p>A <code>callModel</code> example showing the core concept:</p>
+
+      <pre><code>// Conceptual TypeScript example
+import { callModel, stopWhen } from '@openrouter/agent';
+
+const result = await callModel({
+  model: 'openai/gpt-4o',
+  messages: [{ role: 'user', content: 'Research and summarize the latest AI news.' }],
+  tools: [searchWeb, extractArticle],
+  stopConditions: [
+    stopWhen.maxSteps(5),
+    stopWhen.maxCost(0.02),
+  ],
+  onItem: (item) => {
+    // Each item has an id — React state updates are trivial
+    updateUI(item.id, item.content);
+  },
+});</code></pre>
+
+      <p><strong>Key insight:</strong> Items-based streaming means your UI never needs to merge partial updates. Each item ID maps to a UI element. When the stream sends a new version, React just replaces that element. This eliminates an entire class of rendering bugs.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What is the primary purpose of <code>callModel</code> in the Agent SDK?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>To manage API keys</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>To handle text generation, streaming, and tool calling with automatic execution</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>To create HTTP servers</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>To format chat messages</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — callModel is the core function that orchestrates generation, streaming, and automatic tool execution.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> How does items-based streaming differ from traditional streaming?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>It's slower but more reliable</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>It replaces items by ID instead of accumulating chunks</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>It only works with JSON output</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>It requires a database to store items</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Items-based streaming replaces content by ID rather than appending chunks, simplifying UI state management.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What is the purpose of the <code>stopWhen</code> helper?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>To pause the agent indefinitely</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>To define conditions that halt agent execution (step count, cost, tokens)</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>To stop streaming and return results</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>To prevent the model from calling tools</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — stopWhen lets you define halting conditions like max steps, cost limits, or token budgets.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What does <code>nextTurnParams</code> enable?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>It resets the agent state every turn</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>It passes context from one agent turn to the next, enabling plugin systems and adaptive agents</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>It generates random parameters for testing</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>It compresses large tool outputs</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — nextTurnParams chains context across turns, enabling stateful, adaptive agent behaviors.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> Which tool type is used for human-in-the-loop approvals?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Regular tools</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Generator tools</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Manual tools</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Multi-turn tools</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — Manual tools pause execution and require human approval before running, providing safety gates for sensitive operations.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="23-advanced-routing.html" class="btn btn-outline">← Previous: Advanced Routing</a>
+      <a href="25-guardrails-security.html" class="btn btn-primary">Next: Guardrails & Security →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

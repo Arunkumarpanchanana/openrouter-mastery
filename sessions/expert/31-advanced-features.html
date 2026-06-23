@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 31: Advanced Features — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/expert.html">Expert</a> <span>›</span>
+      Session 31
+    </div>
+    <h1>Session 31: Advanced Features</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 45 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🚀 Expert</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="expert-31">
+      <input type="checkbox" id="complete-e31">
+      <label for="complete-e31" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>Response Caching</h3>
+      <p>Cache identical LLM requests to reduce cost and latency for repeated queries. This is especially useful for agent workflows, unit testing, and any scenario where the same input occurs multiple times. Cached responses return instantly and cost nothing.</p>
+
+      <h3>Response Healing Plugin</h3>
+      <p>Automatically validates and repairs malformed JSON responses. When a model produces invalid JSON (trailing commas, missing brackets, truncated output), the response healing plugin fixes it before returning. This makes structured outputs dramatically more reliable in production.</p>
+
+      <h3>Custom Classifiers</h3>
+      <p>Tag generations by department, task type, or complexity level. Custom classifiers let you attach metadata to every request for cost attribution, usage analytics, and audit trails. This is essential for organizations that need to track AI spend by team or project.</p>
+
+      <h3>Embeddings</h3>
+      <p>Generate vector embeddings from text and images. Access multiple embedding models through a single API — no need to manage separate endpoints for different embedding providers. Embeddings power semantic search, clustering, and RAG pipelines.</p>
+
+      <h3>Responses API (Beta)</h3>
+      <p>OpenAI-compatible Responses API with support for reasoning, tool calling, and web search. This gives you access to the latest OpenAI response generation capabilities through the OpenRouter endpoint, with the same provider flexibility you get with chat completions.</p>
+
+      <h3>App Attribution</h3>
+      <p>Use <code>HTTP-Referer</code> and <code>X-OpenRouter-Title</code> headers to identify your app in OpenRouter's analytics. This helps your app appear in the Design Arena rankings and gives you visibility into how your application is using the API.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Try response caching and response healing to see how they improve reliability and performance:</p>
+
+      <pre><code>python3 -c "
+import requests, os, json
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+# Response healing — ensures valid JSON even if model makes mistakes
+prompt = 'Generate a user profile for a person named Alice. Return as JSON with name, age, and email fields.'
+resp = requests.post(url, headers=headers, json={
+    'model': 'openai/gpt-4o-mini:free',
+    'messages': [{'role': 'user', 'content': prompt}],
+    'response_format': {'type': 'json_object'},
+    'plugins': [{'id': 'response-healing'}],
+})
+data = resp.json()
+content = data['choices'][0]['message']['content']
+parsed = json.loads(content)
+print('Healed JSON response:')
+print(json.dumps(parsed, indent=2))
+
+# App attribution
+headers2 = {
+    **headers,
+    'HTTP-Referer': 'https://openroutermastery.dev',
+    'X-OpenRouter-Title': 'OpenRouter Mastery',
+}
+resp2 = requests.post(url, headers=headers2, json={
+    'model': 'openai/gpt-4o-mini:free',
+    'messages': [{'role': 'user', 'content': 'Say hello with attribution'}],
+})
+print('\nWith app attribution headers set ✓')
+"</code></pre>
+
+      <p><strong>Try this:</strong> Remove the <code>response_format</code> parameter and see if the model still returns valid JSON. Then add response healing back and notice how it repairs common JSON issues like trailing commas or missing closing braces.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What is the primary benefit of response caching?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>It improves response quality</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>It reduces cost and latency for repeated identical requests</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>It encrypts all responses</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>It increases the token limit</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Cached responses return instantly (zero latency) and cost nothing, making them ideal for repeated queries in agent workflows and testing.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> What does the response healing plugin do?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>It heals server errors automatically</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>It validates and repairs malformed JSON responses from models</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>It fixes broken API keys</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>It recovers lost network connections</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Response healing automatically fixes common JSON issues like trailing commas, missing brackets, and truncated output.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What are custom classifiers used for?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>To classify which model to use for each request</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>To tag generations by department, task type, or complexity for cost attribution</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>To filter toxic content from responses</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>To sort models by performance</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Custom classifiers attach metadata for cost attribution, usage analytics, and audit trails across teams or projects.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What can you build with embeddings from OpenRouter?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Semantic search, clustering, and RAG pipelines</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Real-time chat applications</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Image generation</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Voice synthesis</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>a</strong> — Embeddings power semantic search, document clustering, and retrieval-augmented generation (RAG) pipelines.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> How do you attribute your app in OpenRouter analytics?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Register your app in the OpenRouter dashboard</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Send HTTP-Referer and X-OpenRouter-Title headers with your requests</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Include your app name in the request body</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Email OpenRouter support with your app details</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The HTTP-Referer and X-OpenRouter-Title headers identify your app and allow it to appear in Design Arena rankings.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="30-advanced-server-tools.html" class="btn btn-outline">← Previous: Advanced Server Tools</a>
+      <a href="32-frameworks-ecosystem.html" class="btn btn-primary">Next: Frameworks & Ecosystem →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

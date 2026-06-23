@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 02: Sign Up & API Keys — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/beginner.html">Beginner</a> <span>›</span>
+      Session 02
+    </div>
+
+    <h1>Session 02: Sign Up & API Keys</h1>
+
+    <div class="session-meta">
+      <span class="meta-item">⏱ 20 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🌱 Beginner</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item tag tag-setup">Setup</span>
+      <span class="meta-item tag tag-hands-on">Hands-on</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+
+    <div class="completion-toggle" data-session-id="beginner-02">
+      <input type="checkbox" id="complete-b02">
+      <label for="complete-b02" class="toggle-label">Mark as complete</label>
+    </div>
+
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>Creating an Account</h3>
+      <p>Visit <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a> to get started. You can sign up with your email address or use Google/GitHub OAuth for a faster setup.</p>
+
+      <h3>API Keys — Your Secret Credential</h3>
+      <p>Your API key is the most sensitive credential in your OpenRouter setup. Treat it like a password — <strong>never hardcode it</strong> in your source code. The standard practice is to use environment variables.</p>
+
+      <h3>Security Best Practices</h3>
+      <ul>
+        <li><strong>Use .env files</strong> — Store your key in a <code>.env</code> file in your project root</li>
+        <li><strong>Add .env to .gitignore</strong> — Never commit secrets to version control</li>
+        <li><strong>Environment variables</strong> — Set <code>OPENROUTER_API_KEY</code> in your shell profile or deployment environment</li>
+        <li><strong>Don't share keys</strong> — Each person/application should have its own key</li>
+        <li><strong>Rotate periodically</strong> — Generate fresh keys and revoke old ones from the dashboard</li>
+      </ul>
+
+      <h3>Dashboard Overview</h3>
+      <p>The dashboard gives you visibility into:</p>
+      <ul>
+        <li><strong>Credits</strong> — Your account balance for paid models</li>
+        <li><strong>Usage</strong> — Real-time and historical API usage</li>
+        <li><strong>Activity Log</strong> — A record of every API call made with your keys</li>
+      </ul>
+
+      <h3>The :free Models</h3>
+      <p>You don't need credits to use <code>:free</code> models. This means you can start learning and building immediately at zero cost. Free models are rate-limited but perfectly adequate for learning and prototyping.</p>
+    </section>
+
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <ol>
+        <li>Go to <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a> and create an account if you haven't already</li>
+        <li>Generate a new API key and give it a descriptive label (e.g., "learning")</li>
+        <li>Copy the key and save it to a <code>.env</code> file:</li>
+      </ol>
+
+      <pre><code># .env
+OPENROUTER_API_KEY=sk-or-v1-your-key-here</code></pre>
+
+      <ol start="4">
+        <li>Verify the key with curl in your terminal:</li>
+      </ol>
+
+      <pre><code>export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+curl -fsSL https://openrouter.ai/api/v1/auth/key \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY"</code></pre>
+
+      <ol start="5">
+        <li>Verify the key with Python:</li>
+      </ol>
+
+      <pre><code>python3 -c "
+import os
+import requests
+
+api_key = os.environ.get('OPENROUTER_API_KEY')
+if not api_key:
+    raise ValueError('Set OPENROUTER_API_KEY environment variable')
+
+response = requests.get(
+    'https://openrouter.ai/api/v1/auth/key',
+    headers={'Authorization': f'Bearer {api_key}'}
+)
+print(response.json())
+"</code></pre>
+
+      <p>If everything is set up correctly, you'll see your key information in JSON format. If authentication fails, double-check that the key is correctly copied and the environment variable is set.</p>
+    </section>
+
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> Where should you store your API key?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Hardcoded in your source code</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>In environment variables or .env files</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>In a public config file committed to GitHub</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>In your database alongside user data</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — API keys should be stored in environment variables or .env files, never hardcoded or committed to version control.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> Which HTTP header is used to send the OpenRouter API key?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>X-API-Key</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Authorization: Bearer &lt;key&gt;</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Authorization: Basic &lt;key&gt;</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>API-Key: &lt;key&gt;</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — OpenRouter uses the standard Bearer token scheme in the Authorization header.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What should you add to .gitignore to avoid leaking secrets?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>requirements.txt</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>.env files containing secrets</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>package.json</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>README.md</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — .env files often contain API keys and other secrets, so they should always be in .gitignore.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What does the <code>/api/v1/auth/key</code> endpoint return?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>A brand new API key</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Key information including the key label and creation date</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Your current credit balance</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Your complete usage history</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The auth/key endpoint validates your key and returns its metadata, like label and creation date.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> Which of the following is NOT a good API key security practice?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Rotating keys periodically</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Committing keys to a private repository</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Using separate keys for different environments</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Restricting keys to necessary scopes</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Even in private repos, keys should never be committed. Use environment variables or secret management services instead.</p></details>
+      </div>
+    </section>
+
+    <nav class="prev-next">
+      <a href="01-what-is-openrouter.html" class="btn btn-outline">← Previous: What is OpenRouter?</a>
+      <a href="03-models-ecosystem.html" class="btn btn-primary">Next: The Models Ecosystem →</a>
+    </nav>
+  </main>
+
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

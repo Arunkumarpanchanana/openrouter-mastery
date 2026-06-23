@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenRouter Mastery — From First API Call to Production-Grade Systems</title>
+  <meta name="description" content="The complete hands-on course to go from first API call to production-grade OpenRouter-powered systems. 33 sessions. 3 levels. Real labs.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(106,61,232,.12); border: 1px solid rgba(106,61,232,.3);
+      border-radius: 100px; padding: 6px 16px; font-size: 13px; font-weight: 600;
+      color: var(--primary-dark); margin-bottom: 28px;
+    }
+    .cta-group { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
+    .hero-stat-divider { width: 1px; height: 36px; background: rgba(106,61,232,.25); }
+    .progress-dashboard {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 24px 32px;
+      max-width: 600px; margin: -30px auto 0; position: relative; z-index: 10;
+      box-shadow: var(--shadow-lg); text-align: left;
+    }
+    .progress-dashboard h3 { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+    .progress-dashboard .progress-label { font-size: 13px; color: var(--text-muted); }
+    .progress-dashboard .progress-label strong { color: var(--primary); font-weight: 700; }
+    .features {
+      padding: 4rem 0; background: var(--bg-off); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px;
+    }
+    .feature-item { display: flex; gap: 16px; align-items: flex-start; }
+    .feature-icon {
+      width: 44px; height: 44px; background: var(--primary-bg); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; color: var(--primary);
+      font-size: 18px; flex-shrink: 0;
+    }
+    .feature-text h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .feature-text p { font-size: 13px; color: var(--text-light); line-height: 1.6; margin-bottom: 0; }
+    .section-label {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--primary); margin-bottom: 12px;
+    }
+    .section-title { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .section-sub { color: var(--text-light); font-size: 1rem; margin-bottom: 2rem; max-width: 560px; }
+    .session-card { text-decoration: none; }
+    .session-card:hover { border-color: var(--primary-light); }
+    @media (max-width: 640px) {
+      .hero-stat-divider { display: none; }
+      .hero-stats { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="index.html" class="active">Home</a>
+        <a href="sections/beginner.html">Beginner</a>
+        <a href="sections/intermediate.html">Intermediate</a>
+        <a href="sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <i class="fa-solid fa-bolt"></i>
+        New for 2026 — Master OpenRouter
+      </div>
+      <h1>OpenRouter Mastery</h1>
+      <p class="subtitle">The complete hands-on course to go from first API call to production-grade OpenRouter-powered systems.</p>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="number">33</span>
+          <span class="label">Sessions</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="number">3</span>
+          <span class="label">Levels</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="number">23+</span>
+          <span class="label">Hours</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="number">Real</span>
+          <span class="label">Labs</span>
+        </div>
+      </div>
+
+      <div class="cta-group">
+        <a class="btn btn-primary" href="sections/beginner.html">
+          Start Learning Free <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <a class="btn btn-outline" href="#curriculum">
+          <i class="fa-solid fa-list"></i> View Curriculum
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="progress-dashboard">
+      <h3><i class="fa-solid fa-chart-line" style="margin-right:6px;color:var(--primary)"></i> Your Progress</h3>
+      <div class="progress-bar-container" style="max-width:100%;margin-bottom:8px">
+        <div class="progress-bar">
+          <div class="progress-bar-fill" style="width:0%"></div>
+        </div>
+        <span class="progress-text">0 / 33</span>
+      </div>
+      <p class="progress-label"><strong class="progress-pct">0%</strong> complete · Keep it up!</p>
+    </div>
+  </div>
+
+  <section class="tracks">
+    <div class="container">
+      <div class="section-label">Three Learning Tracks</div>
+      <h2 class="section-title">Pick Your Level, Own the Path</h2>
+      <p class="section-sub">Whether you're brand new to OpenRouter or ready to ship production multi-model systems, there's a track built for you.</p>
+
+      <div class="track-grid">
+        <a class="track-card" href="sections/beginner.html">
+          <div class="emoji">🌱</div>
+          <h3>Build Your OpenRouter Foundation</h3>
+          <p>Understand what OpenRouter is, get your API keys, make your first calls, and build a CLI chatbot from scratch.</p>
+          <div class="meta">10 sessions · ~5 hours</div>
+          <span class="btn btn-primary btn-small">Start Beginner <i class="fa-solid fa-arrow-right"></i></span>
+        </a>
+
+        <a class="track-card" href="sections/intermediate.html">
+          <div class="emoji">💻</div>
+          <h3>Build Real Integrations</h3>
+          <p>Go deep with structured outputs, tool calling, provider routing, multimodal inputs, and build a multi-tool research agent.</p>
+          <div class="meta">11 sessions · ~8 hours</div>
+          <span class="btn btn-primary btn-small">Start Intermediate <i class="fa-solid fa-arrow-right"></i></span>
+        </a>
+
+        <a class="track-card" href="sections/expert.html">
+          <div class="emoji">🚀</div>
+          <h3>Production-Grade Systems</h3>
+          <p>Master cost optimization, advanced routing, guardrails, observability, evals, and ship a production multi-agent system.</p>
+          <div class="meta">12 sessions · ~10 hours</div>
+          <span class="btn btn-primary btn-small">Start Expert <i class="fa-solid fa-arrow-right"></i></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="curriculum" id="curriculum">
+    <div class="container">
+      <div class="section-label">Full Course</div>
+      <h2 class="section-title">33 Sessions — Every One Hands-On</h2>
+      <p class="section-sub">Structured from zero to production. Click any session to jump in.</p>
+
+      <div class="track-section">
+        <div class="track-header">
+          <span style="font-size:1.3rem">🌱</span>
+          <h3>Beginner Track</h3>
+          <span class="count">10 sessions · ~5 hours</span>
+        </div>
+        <div class="session-grid">
+          <a class="session-card" href="sessions/beginner/01-what-is-openrouter.html">
+            <span class="number">01</span>
+            <div class="info">
+              <div class="title">What is OpenRouter?</div>
+              <div class="desc">Understand the OpenRouter platform, its role as a unified API gateway, and why it matters for AI development.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-concepts">Concepts</span>
+              <span class="tag tag-overview">Overview</span>
+            </div>
+            <span class="duration">25 min</span>
+          </a>
+          <a class="session-card" href="sessions/beginner/02-signup-and-api-key.html">
+            <span class="number">02</span>
+            <div class="info">
+              <div class="title">Sign Up & API Keys</div>
+              <div class="desc">Create your OpenRouter account, generate and secure API keys, and understand billing basics.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-setup">Setup</span>
+              <span class="tag tag-hands-on">Hands-on</span>
+            </div>
+            <span class="duration">20 min</span>
+          </a>
+          <a class="session-card" href="sessions/beginner/03-models-ecosystem.html">
+            <span class="number">03</span>
+            <div class="info">
+              <div class="title">The Models Ecosystem</div>
+              <div class="desc">Explore the 300+ models available through OpenRouter and learn how to navigate, compare, and choose the right one.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-models">Models</span>
+              <span class="tag tag-exploration">Exploration</span>
+            </div>
+            <span class="duration">30 min</span>
+          </a>
+          <a class="session-card" href="sessions/beginner/04-your-first-api-call.html">
+            <span class="number">04</span>
+            <div class="info">
+              <div class="title">Your First API Call</div>
+              <div class="desc">Make your first API request to OpenRouter using curl and Python, and understand the request-response cycle.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-api">API</span>
+              <span class="tag tag-hands-on">Hands-on</span>
+            </div>
+            <span class="duration">35 min</span>
+          </a>
+          <a class="session-card" href="sessions/beginner/05-understanding-responses.html">
+            <span class="number">05</span>
+            <div class="info">
+              <div class="title">Understanding API Responses</div>
+              <div class="desc">Parse OpenRouter API responses, understand the data structure, and learn to extract useful information.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-api">API</span>
+              <span class="tag tag-concepts">Concepts</span>
+            </div>
+            <span class="duration">25 min</span>
+          </a>
+          <a class="session-card" href="sessions/beginner/06-parameters-deep-dive.html">
+            <span class="number">06</span>
+            <div class="info">
+              <div class="title">Parameters Deep Dive</div>
+              <div class="desc">Explore temperature, top_p, max_tokens, frequency_penalty, and other parameters that control model behavior.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-config">Config</span>
+              <span class="tag tag-api">API</span>
+            </div>
+            <span class="duration">30 min</span>
+          </a>
+          <a class="session-card" href="sessions/beginner/07-error-handling.html">
+            <span class="number">07</span>
+            <div class="info">
+              <div class="title">Error Handling & Resilience</div>
+              <div class="desc">Handle API errors gracefully, implement retries with exponential backoff, and build resilient applications.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-reliability">Reliability</span>
+              <span class="tag tag-debugging">Debugging</span>
+            </div>
+            <span class="duration">25 min</span>
+          </a>
+          <a class="session-card" href="sessions/beginner/08-streaming-basics.html">
+            <span class="number">08</span>
+            <div class="info">
+              <div class="title">Streaming Basics</div>
+              <div class="desc">Implement real-time streaming responses to improve user experience and reduce perceived latency.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-ux">UX</span>
+              <span class="tag tag-api">API</span>
+            </div>
+            <span class="duration">30 min</span>
+          </a>
+          <a class="session-card" href="sessions/beginner/09-model-switching.html">
+            <span class="number">09</span>
+            <div class="info">
+              <div class="title">Model Switching & Free Tier</div>
+              <div class="desc">Learn to switch between models dynamically and leverage OpenRouter's free tier for experimentation.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-strategy">Strategy</span>
+              <span class="tag tag-hands-on">Hands-on</span>
+            </div>
+            <span class="duration">25 min</span>
+          </a>
+          <a class="session-card" href="sessions/beginner/10-beginner-capstone.html">
+            <span class="number">10</span>
+            <div class="info">
+              <div class="title">Capstone: CLI Chatbot</div>
+              <div class="desc">Build a full-featured CLI chatbot with history, streaming, and model selection using Python.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-project">Project</span>
+              <span class="tag tag-python">Python</span>
+            </div>
+            <span class="duration">45 min</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="track-section">
+        <div class="track-header">
+          <span style="font-size:1.3rem">💻</span>
+          <h3>Intermediate Track</h3>
+          <span class="count">11 sessions · ~8 hours</span>
+        </div>
+        <div class="session-grid">
+          <a class="session-card" href="sessions/intermediate/11-structured-outputs-json-schema.html">
+            <span class="number">11</span>
+            <div class="info">
+              <div class="title">Structured Outputs & JSON Schema</div>
+              <div class="desc">Get reliable structured data from models using JSON Schema and OpenRouter's structured output mode.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-api">API</span>
+              <span class="tag tag-data">Data</span>
+            </div>
+            <span class="duration">35 min</span>
+          </a>
+          <a class="session-card" href="sessions/intermediate/12-tool-calling-function-use.html">
+            <span class="number">12</span>
+            <div class="info">
+              <div class="title">Tool Calling & Function Use</div>
+              <div class="desc">Enable models to call external functions and APIs through OpenRouter's tool calling interface.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-agentic">Agentic</span>
+              <span class="tag tag-api">API</span>
+            </div>
+            <span class="duration">45 min</span>
+          </a>
+          <a class="session-card" href="sessions/intermediate/13-client-sdks-python.html">
+            <span class="number">13</span>
+            <div class="info">
+              <div class="title">Client SDKs (Python)</div>
+              <div class="desc">Use the OpenRouter Python SDK and the OpenAI-compatible client for cleaner, more maintainable code.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-sdk">SDK</span>
+              <span class="tag tag-hands-on">Hands-on</span>
+            </div>
+            <span class="duration">35 min</span>
+          </a>
+          <a class="session-card" href="sessions/intermediate/14-provider-routing-fallbacks.html">
+            <span class="number">14</span>
+            <div class="info">
+              <div class="title">Provider Routing & Fallbacks</div>
+              <div class="desc">Configure provider routing, set fallback chains, and ensure high availability across model providers.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-routing">Routing</span>
+              <span class="tag tag-strategy">Strategy</span>
+            </div>
+            <span class="duration">40 min</span>
+          </a>
+          <a class="session-card" href="sessions/intermediate/15-model-variants.html">
+            <span class="number">15</span>
+            <div class="info">
+              <div class="title">Model Variants</div>
+              <div class="desc">Understand and leverage model variants — instruct, chat, preview, and fine-tuned versions available through OpenRouter.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-strategy">Strategy</span>
+              <span class="tag tag-variants">Variants</span>
+            </div>
+            <span class="duration">30 min</span>
+          </a>
+          <a class="session-card" href="sessions/intermediate/16-server-tools.html">
+            <span class="number">16</span>
+            <div class="info">
+              <div class="title">Server Tools</div>
+              <div class="desc">Use OpenRouter's built-in server tools for tasks like web search, content extraction, and code execution.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-tools">Tools</span>
+              <span class="tag tag-built-in">Built-in</span>
+            </div>
+            <span class="duration">35 min</span>
+          </a>
+          <a class="session-card" href="sessions/intermediate/17-multimodal-inputs.html">
+            <span class="number">17</span>
+            <div class="info">
+              <div class="title">Multimodal Inputs</div>
+              <div class="desc">Send images, audio, and other multimodal inputs through OpenRouter to supported vision and audio models.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-multimodal">Multimodal</span>
+              <span class="tag tag-api">API</span>
+            </div>
+            <span class="duration">35 min</span>
+          </a>
+          <a class="session-card" href="sessions/intermediate/18-agent-patterns.html">
+            <span class="number">18</span>
+            <div class="info">
+              <div class="title">Building Agent Patterns</div>
+              <div class="desc">Implement common agent architectures — ReAct, tool loops, and orchestrator patterns on OpenRouter.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-agentic">Agentic</span>
+              <span class="tag tag-architecture">Architecture</span>
+            </div>
+            <span class="duration">45 min</span>
+          </a>
+          <a class="session-card" href="sessions/intermediate/19-message-transforms.html">
+            <span class="number">19</span>
+            <div class="info">
+              <div class="title">Message Transforms</div>
+              <div class="desc">Optimize requests with message transforms for better performance, cost savings, and compatibility across models.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-optimization">Optimization</span>
+              <span class="tag tag-api">API</span>
+            </div>
+            <span class="duration">30 min</span>
+          </a>
+          <a class="session-card" href="sessions/intermediate/20-prompt-caching.html">
+            <span class="number">20</span>
+            <div class="info">
+              <div class="title">Prompt Caching</div>
+              <div class="desc">Implement prompt caching to reduce latency and costs for repeated system prompts and large contexts.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-performance">Performance</span>
+              <span class="tag tag-cost">Cost</span>
+            </div>
+            <span class="duration">35 min</span>
+          </a>
+          <a class="session-card" href="sessions/intermediate/21-intermediate-capstone.html">
+            <span class="number">21</span>
+            <div class="info">
+              <div class="title">Capstone: Multi-Tool Research Agent</div>
+              <div class="desc">Build an agent that searches the web, extracts content, and synthesizes research using multiple tools.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-project">Project</span>
+              <span class="tag tag-python">Python</span>
+            </div>
+            <span class="duration">50 min</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="track-section">
+        <div class="track-header">
+          <span style="font-size:1.3rem">🚀</span>
+          <h3>Expert Track</h3>
+          <span class="count">12 sessions · ~10 hours</span>
+        </div>
+        <div class="session-grid">
+          <a class="session-card" href="sessions/expert/22-cost-optimization.html">
+            <span class="number">22</span>
+            <div class="info">
+              <div class="title">Cost Optimization Architecture</div>
+              <div class="desc">Design cost-effective systems with model tiering, caching strategies, and intelligent request batching.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-strategy">Strategy</span>
+              <span class="tag tag-production">Production</span>
+            </div>
+            <span class="duration">40 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/23-advanced-routing.html">
+            <span class="number">23</span>
+            <div class="info">
+              <div class="title">Advanced Routing</div>
+              <div class="desc">Implement advanced routing strategies — latency-based, cost-based, and capability-based routing with custom logic.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-routing">Routing</span>
+              <span class="tag tag-strategy">Strategy</span>
+            </div>
+            <span class="duration">40 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/24-agent-sdk-deep-dive.html">
+            <span class="number">24</span>
+            <div class="info">
+              <div class="title">Agent SDK Deep Dive</div>
+              <div class="desc">Explore the OpenRouter Agent SDK for building sophisticated agent loops with state management and tool integration.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-sdk">SDK</span>
+              <span class="tag tag-agentic">Agentic</span>
+            </div>
+            <span class="duration">50 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/25-guardrails-security.html">
+            <span class="number">25</span>
+            <div class="info">
+              <div class="title">Guardrails & Security</div>
+              <div class="desc">Implement content moderation, input validation, output filtering, and security best practices for production apps.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-security">Security</span>
+              <span class="tag tag-compliance">Compliance</span>
+            </div>
+            <span class="duration">40 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/26-workspaces-budgets.html">
+            <span class="number">26</span>
+            <div class="info">
+              <div class="title">Workspaces, Budgets & Presets</div>
+              <div class="desc">Manage team access with workspaces, set usage budgets, and create reusable model presets for your organization.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-management">Management</span>
+              <span class="tag tag-team">Team</span>
+            </div>
+            <span class="duration">35 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/27-broadcast-observability.html">
+            <span class="number">27</span>
+            <div class="info">
+              <div class="title">Broadcast & Observability</div>
+              <div class="desc">Use OpenRouter's broadcast feature and implement observability with logging, metrics, and tracing.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-ops">Ops</span>
+              <span class="tag tag-monitoring">Monitoring</span>
+            </div>
+            <span class="duration">35 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/28-evals-benchmarks.html">
+            <span class="number">28</span>
+            <div class="info">
+              <div class="title">Evals & Benchmarks</div>
+              <div class="desc">Build evaluation pipelines to measure model performance, compare providers, and track regressions over time.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-quality">Quality</span>
+              <span class="tag tag-measurement">Measurement</span>
+            </div>
+            <span class="duration">45 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/29-production-deployment.html">
+            <span class="number">29</span>
+            <div class="info">
+              <div class="title">Production Deployment</div>
+              <div class="desc">Deploy OpenRouter-powered applications to production with scaling, monitoring, and incident response strategies.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-ops">Ops</span>
+              <span class="tag tag-scale">Scale</span>
+            </div>
+            <span class="duration">40 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/30-advanced-server-tools.html">
+            <span class="number">30</span>
+            <div class="info">
+              <div class="title">Advanced Server Tools</div>
+              <div class="desc">Build custom server-side tools and integrate them into agent workflows for advanced automation.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-tools">Tools</span>
+              <span class="tag tag-agentic">Agentic</span>
+            </div>
+            <span class="duration">40 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/31-advanced-features.html">
+            <span class="number">31</span>
+            <div class="info">
+              <div class="title">Advanced Features</div>
+              <div class="desc">Explore advanced OpenRouter features — hyperparameters, custom routes, model arbitration, and experimental APIs.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-advanced">Advanced</span>
+              <span class="tag tag-api">API</span>
+            </div>
+            <span class="duration">45 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/32-frameworks-ecosystem.html">
+            <span class="number">32</span>
+            <div class="info">
+              <div class="title">Frameworks & Ecosystem</div>
+              <div class="desc">Integrate OpenRouter with popular frameworks — LangChain, LlamaIndex, Vercel AI SDK, and custom integrations.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-ecosystem">Ecosystem</span>
+              <span class="tag tag-integration">Integration</span>
+            </div>
+            <span class="duration">35 min</span>
+          </a>
+          <a class="session-card" href="sessions/expert/33-expert-capstone.html">
+            <span class="number">33</span>
+            <div class="info">
+              <div class="title">Capstone: Production Multi-Agent System</div>
+              <div class="desc">Build and deploy a production-grade multi-agent system with routing, observability, and cost controls.</div>
+            </div>
+            <div class="tags">
+              <span class="tag tag-project">Project</span>
+              <span class="tag tag-python">Python</span>
+            </div>
+            <span class="duration">90 min</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <div class="section-label">What You'll Learn</div>
+      <h2 class="section-title">From Zero to Production OpenRouter</h2>
+      <p class="section-sub" style="margin-bottom:48px">Six key outcomes across 33 sessions of hands-on learning.</p>
+
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-solid fa-gateway"></i></div>
+          <div class="feature-text">
+            <h4>OpenRouter Platform Mastery</h4>
+            <p>Understand the OpenRouter architecture, models ecosystem, and how it unifies 300+ models behind a single API.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-solid fa-code"></i></div>
+          <div class="feature-text">
+            <h4>Full API Fluency</h4>
+            <p>Master the OpenRouter API from first request to advanced features — streaming, structured outputs, tool calling, and multimodal.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-solid fa-route"></i></div>
+          <div class="feature-text">
+            <h4>Smart Routing & Cost Control</h4>
+            <p>Design intelligent routing strategies, manage provider fallbacks, and optimize costs across models and providers.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
+          <div class="feature-text">
+            <h4>Agent Patterns & Tool Use</h4>
+            <p>Build agents with tool calling, server tools, agent SDKs, and multi-agent orchestration for complex workflows.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-solid fa-shield"></i></div>
+          <div class="feature-text">
+            <h4>Production Security & Observability</h4>
+            <p>Implement guardrails, monitoring, logging, and observability to run OpenRouter safely at scale.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-solid fa-cloud-upload"></i></div>
+          <div class="feature-text">
+            <h4>Production Deployment</h4>
+            <p>Deploy and operate OpenRouter-powered systems in production with evals, scaling, and incident response.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="assets/js/progress.js"></script>
+</body>
+</html>

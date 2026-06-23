@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 33: Capstone — Production Multi-Agent System — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/expert.html">Expert</a> <span>›</span>
+      Session 33
+    </div>
+    <h1>Session 33: Capstone: Production Multi-Agent System</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 90 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🚀 Expert</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="expert-33">
+      <input type="checkbox" id="complete-e33">
+      <label for="complete-e33" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>Bringing It All Together</h3>
+      <p>This capstone combines everything you've learned: cost optimization, routing, tools, streaming, structured outputs, error handling, and monitoring. You'll build a production-grade multi-agent system that intelligently routes work across model tiers with full observability.</p>
+
+      <h3>Architecture</h3>
+      <p>The system follows a four-step pipeline: <strong>Classification agent</strong> (routes to the right model) → <strong>Extraction agent</strong> (produces structured data) → <strong>Research agent</strong> (gathers information using tools) → <strong>Synthesis agent</strong> (produces the final answer). Each step is independent and can be scaled separately.</p>
+
+      <h3>Model Tier Assignment</h3>
+      <p>Each step uses the right model tier. Simple steps like classification and extraction use cheap models. Complex reasoning and synthesis use more capable models. This tiered approach minimizes cost while maintaining quality — the core principle of production LLM systems.</p>
+
+      <h3>Observability</h3>
+      <p>Monitoring via OpenRouter Broadcast sends traces from every step to your observability platform. Track latency, token usage, and cost per agent step. This gives you full visibility into where time and money are being spent across the pipeline.</p>
+
+      <h3>Cost Tracking</h3>
+      <p>Track cost at every step to understand where your budget goes. Each agent call logs its token usage and model used, giving you per-request cost accounting. This data informs future optimization decisions — you can see exactly which steps justify their cost and which might benefit from a cheaper model.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Build a multi-agent content processing pipeline with classification, research, extraction, and synthesis:</p>
+
+      <pre><code>python3 -c "
+import requests, os, json
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+def call_model(messages, model='openai/gpt-4o-mini:free', **kwargs):
+    resp = requests.post(url, headers=headers, json={
+        'model': model, 'messages': messages, **kwargs
+    })
+    return resp.json()
+
+def step_classify(user_input):
+    '''Step 1: Classify intent (cheap model)'''
+    resp = call_model([
+        {'role': 'system', 'content': \"Classify as: 'technical', 'creative', or 'factual'. Respond with ONE word.\"},
+        {'role': 'user', 'content': user_input}
+    ], model='openai/gpt-4o-mini:free', max_tokens=10)
+    classification = resp['choices'][0]['message']['content'].strip().lower()
+    print(f'  Classification: {classification}')
+    return classification
+
+def step_research(query, classification):
+    '''Step 2: Research based on classification (medium model)'''
+    style = {
+        'technical': 'Use precise technical language.',
+        'creative': 'Be imaginative and engaging.',
+        'factual': 'Cite specific facts and data.'
+    }
+    resp = call_model([
+        {'role': 'system', 'content': f'Research the following. {style.get(classification, \"Be helpful.\")}'},
+        {'role': 'user', 'content': query}
+    ], model='openai/gpt-4o-mini:free', max_tokens=300)
+    return resp['choices'][0]['message']['content']
+
+def step_extract_facts(research_text):
+    '''Step 3: Extract structured data (cheap model with structured outputs)'''
+    resp = call_model([
+        {'role': 'system', 'content': 'Extract 3 key facts from the research as JSON.'},
+        {'role': 'user', 'content': research_text}
+    ], model='openai/gpt-4o-mini:free',
+       response_format={'type': 'json_object'})
+    return json.loads(resp['choices'][0]['message']['content'])
+
+def step_synthesize(intent, research, facts):
+    '''Step 4: Final synthesis (better model)'''
+    resp = call_model([
+        {'role': 'system', 'content': 'Synthesize the research and facts into a clear, well-structured final response.'},
+        {'role': 'user', 'content': f'Intent: {intent}\nResearch: {research}\nFacts: {json.dumps(facts)}'}
+    ], model='openai/gpt-4o-mini:free', max_tokens=500)
+    return resp['choices'][0]['message']['content']
+
+def track_cost(steps):
+    total_tokens = 0
+    for step in steps:
+        usage = step.get('usage', {})
+        tokens = usage.get('total_tokens', 0)
+        total_tokens += tokens
+        print(f'    Tokens: {tokens} (prompt: {usage.get(\"prompt_tokens\", 0)}, completion: {usage.get(\"completion_tokens\", 0)})')
+    print(f'    Total tokens: {total_tokens}')
+
+user_query = 'Explain how neural networks work and what they\\'re used for.'
+print(f'Input: {user_query}\n')
+
+classification = step_classify(user_query)
+research = step_research(user_query, classification)
+facts = step_extract_facts(research)
+synthesis = step_synthesize(classification, research, facts)
+
+print(f'\nFinal Output:\n{synthesis}')
+"</code></pre>
+
+      <p><strong>Try this:</strong> Replace the synthesis model with a more capable model like <code>openai/gpt-4o</code> and compare output quality. Add cost tracking per step using the usage data. Extend the pipeline with additional agents — for example, a fact-checking agent that validates the research before synthesis.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What is the four-step architecture of the multi-agent capstone pipeline?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Input → Process → Output → Store</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Classification → Extraction → Research → Synthesis</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Fetch → Parse → Transform → Load</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Plan → Code → Test → Deploy</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The pipeline flows through four agents: classification, extraction, research, and synthesis — each assigned a model tier matching its complexity.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> How do you decompose a workflow for multi-agent processing?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Use one large model for everything</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Break the task into independent steps, each handled by a specialized agent with the right model tier</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Randomly distribute work across available models</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Use the cheapest model for every step regardless of complexity</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Decompose into discrete steps and assign each to an agent with an appropriately capable model — cheap for simple tasks, capable for complex ones.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> How should model tiers be assigned in a multi-agent system?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>All agents use the same model for consistency</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Simple steps use cheap models, complex reasoning steps use more capable models</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Assign models by alphabetical order</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Let each agent choose its own model</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Match model capability to task complexity: cheap models for classification/extraction, capable models for reasoning/synthesis.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> Why is cost tracking important in a multi-agent pipeline?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>It's not important — only output quality matters</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>It tells you where spend goes and which steps might benefit from cheaper models</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>It automatically optimizes the pipeline</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>It's required by OpenRouter's API</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Per-step cost tracking reveals which parts of the pipeline are most expensive, guiding optimization decisions.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> How does observability integrate into a multi-agent pipeline?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Each agent sends its own logs to a separate system</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>OpenRouter Broadcast sends traces from every step to your observability platform</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Observability is only needed at the final output step</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Manual logging to a text file</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Broadcast provides automatic trace data for every API call across all agents, giving end-to-end visibility into latency, tokens, and cost.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="32-frameworks-ecosystem.html" class="btn btn-outline">← Previous: Frameworks & Ecosystem</a>
+      <a href="../../sections/expert.html" class="btn btn-outline">Back to Expert →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

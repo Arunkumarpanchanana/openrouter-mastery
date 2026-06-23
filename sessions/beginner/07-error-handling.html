@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 07: Error Handling & Resilience — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/beginner.html">Beginner</a> <span>›</span>
+      Session 07
+    </div>
+    <h1>Session 07: Error Handling & Resilience</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 25 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🌱 Beginner</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="beginner-07">
+      <input type="checkbox" id="complete-b07">
+      <label for="complete-b07" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>HTTP Error Codes</h3>
+      <ul>
+        <li><strong>401</strong> — Bad or missing API key. Check your <code>Authorization</code> header.</li>
+        <li><strong>402</strong> — Insufficient credits. Use <code>:free</code> models if you're out of credits.</li>
+        <li><strong>429</strong> — Rate limited. You're sending requests too fast — back off and retry.</li>
+        <li><strong>502</strong> — Provider is down. The upstream model provider returned an error.</li>
+        <li><strong>503</strong> — No available provider. OpenRouter couldn't find a provider to serve your request.</li>
+      </ul>
+
+      <h3>Zero-Completion Insurance</h3>
+      <p>OpenRouter does not charge for failed or empty responses. If a model returns an error mid-stream or fails to generate, you aren't billed for that portion. This applies even if partial tokens were transmitted before the failure.</p>
+
+      <h3>Retry Strategies</h3>
+      <ul>
+        <li><strong>Exponential backoff</strong> — Wait 1s, 2s, 4s, 8s, and so on between retries.</li>
+        <li><strong>Max retries</strong> — Set a limit (3-5 attempts) to avoid infinite loops.</li>
+        <li><strong>Jitter</strong> — Add random noise to the delay to prevent the thundering herd problem.</li>
+      </ul>
+
+      <h3>Retry-After Header</h3>
+      <p>When you get a 429 response, check the <code>Retry-After</code> header. It tells you exactly how many seconds to wait before your next request. Always prefer this over guessing.</p>
+
+      <h3>Error Response Format</h3>
+      <p>Errors come back as structured JSON:</p>
+      <pre><code>{ "error": { "code": 401, "message": "..." } }</code></pre>
+
+      <h3>Provider Errors</h3>
+      <p>When a provider fails, the error includes metadata about who failed and why. You can find <code>error.metadata.provider_name</code> and <code>error.metadata.raw</code> to debug provider-specific issues.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Write a robust retry function that handles common errors gracefully:</p>
+
+      <pre><code>python3 -c "
+import requests, os, time, random
+
+def robust_call(messages, model='openai/gpt-4o-mini:free', max_retries=3):
+    url = 'https://openrouter.ai/api/v1/chat/completions'
+    headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+    for attempt in range(max_retries):
+        resp = requests.post(url, headers=headers, json={'model': model, 'messages': messages})
+
+        if resp.status_code == 200:
+            return resp.json()
+
+        if resp.status_code == 429:
+            retry_after = int(resp.headers.get('Retry-After', 2 ** attempt))
+            print(f'Rate limited. Waiting {retry_after}s...')
+            time.sleep(retry_after + random.uniform(0, 1))
+            continue
+
+        if resp.status_code in (502, 503):
+            wait = (2 ** attempt) + random.uniform(0, 1)
+            print(f'Provider error {resp.status_code}. Retrying in {wait:.1f}s...')
+            time.sleep(wait)
+            continue
+
+        # 401, 402, 403 — don't retry, fix the problem
+        error = resp.json().get('error', {})
+        raise Exception(f\"{error.get('code', resp.status_code)}: {error.get('message', 'Unknown error')}\")
+
+    raise Exception('Max retries exceeded')
+
+try:
+    result = robust_call([{'role': 'user', 'content': 'Hello!'}])
+    print(result['choices'][0]['message']['content'])
+except Exception as e:
+    print(f'Call failed: {e}')
+"</code></pre>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What does HTTP status code 402 mean in OpenRouter?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Bad API key</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Insufficient credits</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Rate limited</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Provider is down</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — 402 means you're out of credits. Use <code>:free</code> models or add credits to your account.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> What is "zero-completion insurance"?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>A paid plan that guarantees uptime</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>OpenRouter doesn't charge for failed or empty responses</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>A refund policy for slow responses</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Free credits for new users</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — You aren't billed for failed or empty responses, even if partial tokens were streamed.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> How does exponential backoff work in a retry strategy?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Wait a constant 1 second between retries</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Wait 1s, 2s, 4s, 8s, doubling each time</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Decrease wait time with each retry</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Wait randomly between 1 and 10 seconds</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Exponential backoff doubles the wait time after each failed attempt.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What information does the <code>Retry-After</code> header provide?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>The number of errors so far</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>How many requests you have left</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Exactly how many seconds to wait before retrying</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>The model's current load</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — The Retry-After header tells you the precise number of seconds to wait before your next request.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> Which of these error codes should you typically <em>not</em> retry?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>429 — Rate limited</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>502 — Provider down</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>401 — Bad API key</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>503 — No available provider</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — 401 means the API key is invalid; retrying won't help until you fix the credential.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="06-parameters-deep-dive.html" class="btn btn-outline">← Previous: Parameters Deep Dive</a>
+      <a href="08-streaming-basics.html" class="btn btn-primary">Next: Streaming Basics →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

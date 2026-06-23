@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 26: Workspaces, Budgets & Presets — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/expert.html">Expert</a> <span>›</span>
+      Session 26
+    </div>
+    <h1>Session 26: Workspaces, Budgets & Presets</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 35 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🚀 Expert</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="expert-26">
+      <input type="checkbox" id="complete-e26">
+      <label for="complete-e26" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>Workspaces</h3>
+      <p>Workspaces are separate environments with their own API keys, routing defaults, guardrails, and observability settings. They let you isolate different environments without managing multiple accounts. A typical setup:</p>
+      <ul>
+        <li><strong>Dev workspace</strong> — No budget limits, full access to all models, minimal guardrails</li>
+        <li><strong>Staging workspace</strong> — Limited budget, all requests logged, standard guardrails</li>
+        <li><strong>Production workspace</strong> — Hard budget caps, strict guardrails enabled, monitoring configured</li>
+      </ul>
+
+      <h3>Budgets</h3>
+      <p>Set daily, weekly, monthly, or lifetime caps on spending. Budgets are evaluated at the workspace level and can be hard (block requests when met) or soft (send alerts). You can set different budgets for different keys within the same workspace. This is essential for cost governance in teams.</p>
+
+      <h3>Presets</h3>
+      <p>Presets let you save model configurations — including the model selection, system prompt, temperature, max tokens, response format, and provider preferences — once and reuse them across any application. Change the preset, and every app using it updates automatically. No more copy-pasting configuration across codebases.</p>
+
+      <h3>Custom Classifiers</h3>
+      <p>Tag every generation with custom metadata — department, task type, complexity level, or any custom dimension. Classifiers appear in your logs and analytics, enabling you to slice usage by any tag. This is invaluable for chargebacks, cost allocation, and usage analysis across teams.</p>
+
+      <h3>API Key Scoping</h3>
+      <p>Create API keys scoped to specific workspaces with granular permissions. A key can be read-only, limited to specific models, restricted to certain presets, or given full access. This enables the principle of least privilege — each integration gets exactly the access it needs and nothing more.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Use a preset in a request and add classifier metadata:</p>
+
+      <pre><code>python3 -c "
+import requests, os
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+# In real usage, you would reference a preset from the dashboard:
+resp = requests.post(url, headers=headers, json={
+    'model': 'openai/gpt-4o-mini:free',
+    'messages': [{'role': 'user', 'content': 'Write a summary of this session.'}],
+    # In production, use a saved preset:
+    # 'preset': 'my-production-preset',
+})
+
+data = resp.json()
+print(f'Model: {data[\"model\"]}')
+print(f'Response: {data[\"choices\"][0][\"message\"][\"content\"][:200]}')
+
+# Query available models for workspace-level decisions
+models_resp = requests.get('https://openrouter.ai/api/v1/models?sort=pricing-low-to-high')
+cheapest = models_resp.json()['data'][:3]
+print('\nCheapest models (good for workspace defaults):')
+for m in cheapest:
+    print(f'  {m[\"id\"]} — context: {m.get(\"context_length\", \"?\")} tokens')
+"</code></pre>
+
+      <p><strong>Try this:</strong> Visit the OpenRouter dashboard to create a preset with a specific system prompt and model configuration. Then modify the lab to reference your preset ID and see how the configuration applies automatically.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What is the primary benefit of using workspaces?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>They provide faster response times</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>They isolate environments with separate API keys, guardrails, and settings</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>They automatically balance traffic across providers</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>They reduce token usage by caching responses</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Workspaces provide isolated environments with their own configuration, keys, and policies.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> What types of budget periods does OpenRouter support?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Hourly and daily only</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Daily, weekly, monthly, and lifetime</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Per-request budgets only</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Annual budgets only</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — OpenRouter supports daily, weekly, monthly, and lifetime budget periods for flexible cost control.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What happens when you update a preset in the dashboard?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Only new API calls are affected</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Every application using that preset automatically updates to the new configuration</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>You must redeploy all applications</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>The old preset is deleted permanently</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Presets are live — changing a preset updates all applications that reference it without any code changes.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What are custom classifiers used for?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>To automatically select the best model for each request</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>To tag generations with metadata for cost allocation and usage analysis</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>To classify user intent before routing</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>To filter toxic content from responses</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Custom classifiers add metadata tags to each generation for slicing usage data by department, task type, or any custom dimension.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> What does API key scoping allow you to do?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Create unlimited free API keys</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Restrict keys to specific workspaces with granular permissions per the principle of least privilege</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Share keys across multiple accounts</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Auto-rotate keys every hour</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Key scoping restricts each key to specific workspaces and permissions, enforcing least-privilege access.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="25-guardrails-security.html" class="btn btn-outline">← Previous: Guardrails & Security</a>
+      <a href="27-broadcast-observability.html" class="btn btn-primary">Next: Broadcast & Observability →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

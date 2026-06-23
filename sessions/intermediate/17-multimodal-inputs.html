@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 17: Multimodal Inputs — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/intermediate.html">Intermediate</a> <span>›</span>
+      Session 17
+    </div>
+    <h1>Session 17: Multimodal Inputs</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 35 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">💻 Intermediate</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="intermediate-17">
+      <input type="checkbox" id="complete-i17">
+      <label for="complete-i17" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>What Are Multimodal Inputs?</h3>
+      <p>Multimodal inputs let you send non-text content — images, PDFs, and audio — to models alongside your text prompt. Instead of describing an image in words, you can send the image directly and let the model analyze it.</p>
+
+      <h3>Image Inputs</h3>
+      <p>Images are sent as content parts with type <code>"image_url"</code>. You can provide the image as a URL or as base64-encoded data. The format is:</p>
+      <pre><code>{ "type": "image_url", "image_url": { "url": "https://example.com/image.jpg" } }</code></pre>
+      <p>For base64, prefix the data with the appropriate MIME type: <code>data:image/png;base64,&lt;base64-data&gt;</code></p>
+
+      <h3>PDF and File Support</h3>
+      <p>Many models accept PDFs directly via file content. Check the model's <code>architecture.input_modalities</code> for <code>"file"</code> support. When supported, you can pass PDF content similarly to images.</p>
+
+      <h3>Audio Inputs</h3>
+      <p>Audio can be processed via speech-to-text models like Whisper, or sent to audio-aware multimodal models. Usage tracking includes <code>audio_tokens</code> and <code>video_tokens</code> in <code>prompt_tokens_details</code>.</p>
+
+      <h3>Checking Model Capabilities</h3>
+      <p>Always check a model's supported input modalities before sending multimodal data. The <code>GET /api/v1/models</code> endpoint returns <code>architecture.input_modalities</code> for each model, listing <code>"image"</code>, <code>"audio"</code>, <code>"file"</code>, and <code>"text"</code>.</p>
+
+      <h3>Best Practices</h3>
+      <ul>
+        <li><strong>Compress images</strong> before sending to reduce latency and cost</li>
+        <li><strong>Use URLs when possible</strong> — avoids base64 bloat in request payloads</li>
+        <li><strong>Check model capabilities first</strong> — not all models support all modalities</li>
+        <li><strong>Watch token usage</strong> — images consume significant token budgets</li>
+      </ul>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Analyze an image with a vision model, then check which models support vision:</p>
+
+      <pre><code>python3 &lt;&lt; 'EOF'
+import requests, os
+
+url = "https://openrouter.ai/api/v1/chat/completions"
+headers = {"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"}
+
+# Using an image URL
+resp = requests.post(url, headers=headers, json={
+    "model": "openai/gpt-4o-mini:free",
+    "messages": [{
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "Describe what you see in this image in detail."},
+            {"type": "image_url", "image_url": {"url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/PNG_transparency_demonstration_1.png/300px-PNG_transparency_demonstration_1.png"}}
+        ]
+    }],
+    "max_tokens": 300,
+})
+data = resp.json()
+print(data["choices"][0]["message"]["content"])
+
+# Check if model supports vision
+models_resp = requests.get("https://openrouter.ai/api/v1/models")
+all_models = models_resp.json()["data"]
+vision_models = [m for m in all_models if "image" in m.get("architecture", {}).get("input_modalities", [])]
+print(f"\nModels that accept image input: {len(vision_models)}")
+for m in vision_models[:5]:
+    print(f"  {m['id']}")
+EOF</code></pre>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> How do you send an image in an API request to OpenRouter?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Set a special header for image processing</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Include it as a content part with type <code>"image_url"</code></span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Upload it to a separate endpoint and reference the ID</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Attach it as a file in a multipart form</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Images go in the content array as a part with <code>type: "image_url"</code> and a <code>url</code> field.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> What is the advantage of using a URL instead of base64 for image data?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>URLs are more secure</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Avoids base64 bloat — images can be very large as base64</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>URLs load faster on the model side</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Only URLs work with the free tier</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — URLs avoid the 33% size overhead of base64 encoding, reducing request payload size.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> How can you check whether a model accepts image inputs?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Try sending an image and catch the error</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Check the <code>architecture.input_modalities</code> field for <code>"image"</code></span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Read the model's description on the OpenRouter website</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Both b and c work</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>d</strong> — You can check programmatically via <code>input_modalities</code> or visually on the website's model list.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> Where can you find audio token usage in the API response?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>In the <code>usage.total_tokens</code> field</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>In <code>prompt_tokens_details.audio_tokens</code></span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>In a separate <code>audio_usage</code> object</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>OpenRouter does not track audio tokens</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Audio token counts are included in <code>prompt_tokens_details</code> alongside <code>video_tokens</code>.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> What model capability is indicated by <code>"file"</code> in <code>input_modalities</code>?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>The model can read files from your local filesystem</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>The model accepts file content like PDFs directly in requests</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>The model can generate file downloads</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>The model can upload files to cloud storage</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — <code>"file"</code> modality means the model can accept file content like PDFs directly in the request.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="16-server-tools.html" class="btn btn-outline">← Previous: Server Tools</a>
+      <a href="18-agent-patterns.html" class="btn btn-primary">Next: Building Agent Patterns →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

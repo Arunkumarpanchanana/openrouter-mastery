@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 20: Prompt Caching — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/intermediate.html">Intermediate</a> <span>›</span>
+      Session 20
+    </div>
+    <h1>Session 20: Prompt Caching</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 35 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">💻 Intermediate</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="intermediate-20">
+      <input type="checkbox" id="complete-i20">
+      <label for="complete-i20" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>What Is Prompt Caching?</h3>
+      <p>Prompt caching allows OpenRouter to reuse computed representations for repeated prompt prefixes. If your system prompt and few-shot examples are identical across many requests, the expensive initial processing only happens once. Subsequent requests served from cache are much faster and cheaper.</p>
+
+      <h3>Cost Savings</h3>
+      <p>Cached tokens are significantly cheaper — often 50-90% less than uncached tokens. Look at <code>input_cache_read</code> pricing in the model data to see the per-token cost for cache reads versus <code>input_cost</code> for fresh writes.</p>
+
+      <h3>How It Works</h3>
+      <p>The first request with a given prompt prefix writes to cache (costs the write price). Subsequent requests with the same prefix read from cache (costs the read price, which is much cheaper). Caches have a TTL (time-to-live) and are evicted as newer content replaces them.</p>
+
+      <h3>Cache-Aware Design</h3>
+      <p>Put static content — system prompt, few-shot examples, instructions — at the <strong>start</strong> of your messages. Put variable content — user questions, dynamic data — at the <strong>end</strong>. This maximizes the shared prefix that can be served from cache.</p>
+
+      <h3>Detecting Cache Hits</h3>
+      <p>The <code>usage.prompt_tokens_details.cached_tokens</code> field in the response tells you how many tokens were served from cache. Monitor this to verify your caching strategy is working.</p>
+
+      <h3>Best For</h3>
+      <ul>
+        <li>Chatbots with consistent system prompts across sessions</li>
+        <li>Agents with long instruction blocks that don't change</li>
+        <li>Batch processing where inputs share a common prefix</li>
+      </ul>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Design a cache-optimized system prompt and measure cache hits across multiple requests:</p>
+
+      <pre><code>python3 &lt;&lt; 'EOF'
+import requests, os, time
+
+url = "https://openrouter.ai/api/v1/chat/completions"
+headers = {"Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}"}
+
+system_prompt = "You are a helpful AI assistant specialized in Python programming. Provide clear, concise answers with code examples when relevant. Always explain your reasoning."
+model = "openai/gpt-4o-mini:free"
+
+for i, question in enumerate([
+    "How do I sort a dictionary by values?",
+    "What's the difference between a list and a tuple?",
+    "Explain decorators with an example."
+]):
+    start = time.time()
+    resp = requests.post(url, headers=headers, json={
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": question}
+        ],
+        "max_tokens": 200,
+    })
+    elapsed = time.time() - start
+    usage = resp.json()["usage"]
+    cached = usage.get("prompt_tokens_details", {}).get("cached_tokens", 0)
+    print(f"Q{i+1}: {elapsed:.2f}s, prompt={usage['prompt_tokens']}, cached={cached}")
+EOF</code></pre>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What is prompt caching?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Caching the model's responses for future reuse</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Reusing computed representations for repeated prompt prefixes to save cost and latency</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Saving prompts to a database for later analysis</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Storing API keys for faster authentication</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Prompt caching reuses the model's internal processing of repeated prompt prefixes, reducing cost and latency on subsequent requests.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> Where should you put static content in a cache-optimized prompt?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>At the end of messages, right before the model's response</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>At the start of messages — system prompt and instructions first</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>In a separate cached_context field</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Distributed evenly throughout the messages</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Put static content at the start to maximize the shared prefix that can be served from cache. Variable content goes at the end.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> How can you detect whether a cache hit occurred?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Check the HTTP response status code</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Look at <code>usage.prompt_tokens_details.cached_tokens</code> in the response</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Measure the response time — under 100ms means cache hit</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Check a <code>X-Cache-Hit</code> response header</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The <code>cached_tokens</code> field in <code>prompt_tokens_details</code> tells you how many tokens were served from cache.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What is the difference between write pricing and read pricing in prompt caching?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Write pricing is cheaper; read pricing is more expensive</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>The first request incurs write pricing (full cost), subsequent cache hits use cheaper read pricing</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Both write and read pricing are the same</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Read pricing only applies to batch requests</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The first request writes to cache at full price; subsequent requests that hit the cache pay the cheaper read price.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> Which field in the model data shows the cost of cached tokens?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span><code>input_cost</code></span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span><code>output_cost</code></span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span><code>input_cache_read</code></span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span><code>cached_cost</code></span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — The <code>input_cache_read</code> field in model pricing shows the per-token cost for reading from cache.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="19-message-transforms.html" class="btn btn-outline">← Previous: Message Transforms</a>
+      <a href="21-intermediate-capstone.html" class="btn btn-primary">Next: Capstone: Multi-Tool Research Agent →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

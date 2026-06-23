@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 06: Parameters Deep Dive — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/beginner.html">Beginner</a> <span>›</span>
+      Session 06
+    </div>
+    <h1>Session 06: Parameters Deep Dive</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 30 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🌱 Beginner</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="beginner-06">
+      <input type="checkbox" id="complete-b06">
+      <label for="complete-b06" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>temperature</h3>
+      <p><strong>Range:</strong> 0.0 – 2.0 | <strong>Default:</strong> 1.0</p>
+      <p>Controls randomness in the output. Low values (near 0) make the model deterministic and focused — same input always produces the same output. High values (near 2.0) make it creative and varied. Use low temperature for factual tasks like classification or data extraction. Use high temperature for creative writing, brainstorming, or generating multiple ideas.</p>
+      <p>At temperature 0, the model becomes effectively deterministic: the same prompt with the same parameters will return the same result every time.</p>
+
+      <h3>max_tokens</h3>
+      <p>A hard limit on the length of the response. The model will stop generating once this limit is reached, and the <code>finish_reason</code> will be <code>length</code>. If the model finishes naturally before the limit, generation stops early. You are only charged for the tokens actually generated, not the <code>max_tokens</code> value.</p>
+
+      <h3>top_p</h3>
+      <p><strong>Range:</strong> 0.0 – 1.0 | <strong>Default:</strong> 1.0</p>
+      <p>Also known as nucleus sampling. Instead of considering all possible next tokens, the model considers only the smallest set of tokens whose cumulative probability reaches <code>top_p</code>. A value of 0.1 means only the top 10% most likely tokens are considered. This is an alternative to temperature — typically you adjust one or the other, not both.</p>
+
+      <h3>seed</h3>
+      <p><strong>Type:</strong> Integer</p>
+      <p>When set, the model will make a best-effort attempt to return deterministic results. The same seed combined with the same parameters should produce the same output. This is a best-effort guarantee — not all models support it fully, and provider-side changes can affect reproducibility.</p>
+
+      <h3>stop</h3>
+      <p><strong>Type:</strong> String or Array of strings</p>
+      <p>Stop sequences tell the model to halt generation when it encounters specific text. For example, <code>stop: ["###"]</code> will stop generation as soon as the model outputs "###". Useful for structured outputs where you want generation to end at a delimiter.</p>
+
+      <h3>frequency_penalty</h3>
+      <p><strong>Range:</strong> -2.0 – 2.0</p>
+      <p>Penalizes tokens based on how frequently they've appeared in the text so far. Higher values reduce repetition by making the model less likely to reuse the same words and phrases.</p>
+
+      <h3>presence_penalty</h3>
+      <p><strong>Range:</strong> -2.0 – 2.0</p>
+      <p>Penalizes tokens that have appeared at all in the text, regardless of frequency. Higher values encourage the model to talk about new topics and introduce more diversity.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Experiment with parameters to see how they change the model's output:</p>
+
+      <pre><code>python3 -c "
+import requests, os
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+prompt = 'Give me one creative startup idea in one sentence.'
+
+# Temperature comparison
+for temp in [0.0, 0.7, 1.5]:
+    resp = requests.post(url, headers=headers, json={
+        'model': 'openai/gpt-4o-mini:free',
+        'messages': [{'role': 'user', 'content': prompt}],
+        'temperature': temp,
+        'max_tokens': 100,
+    })
+    print(f'\n--- Temperature {temp} ---')
+    print(resp.json()['choices'][0]['message']['content'])
+
+# Seed determinism
+print('\n\n--- Seed 42 (run twice) ---')
+for i in range(2):
+    resp = requests.post(url, headers=headers, json={
+        'model': 'openai/gpt-4o-mini:free',
+        'messages': [{'role': 'user', 'content': 'Pick a random number between 1 and 100 and explain why.'}],
+        'seed': 42,
+        'temperature': 0.7,
+        'max_tokens': 100,
+    })
+    print(f'Run {i+1}: {resp.json()[\"choices\"][0][\"message\"][\"content\"][:80]}...')
+"</code></pre>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What happens to output as temperature approaches 0?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Output becomes more creative and varied</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Output becomes deterministic and focused</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Output length increases</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Output becomes random</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Low temperature makes the model deterministic and repetitive, always picking the most likely next token.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> Are you charged for the <code>max_tokens</code> value or the actual tokens generated?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>You're charged for max_tokens regardless</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>You're charged only for the tokens actually generated</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>You're charged the higher of the two</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>max_tokens doesn't affect cost</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — You only pay for what the model actually generates, not the max_tokens ceiling.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What is the relationship between <code>top_p</code> and <code>temperature</code>?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>They should always be used together</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>They are alternative ways to control randomness — typically adjust one, not both</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>top_p overrides temperature completely</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>They are unrelated parameters</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Both control randomness but in different ways. It's recommended to tune one at a time.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> Does the <code>seed</code> parameter guarantee identical outputs every time?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Yes, it's a hard guarantee</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>No, it's best-effort and not all models support it fully</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>It only works with temperature at 0</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>It guarantees determinism only for the first request</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Seed is a best-effort feature. Many models support it, but it's not guaranteed across all providers or configurations.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> What do stop sequences do?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Stop the model from using certain words</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Halt generation when specific text is encountered</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Prevent the model from repeating itself</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Limit the total number of API calls</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Stop sequences tell the model to stop generating as soon as it outputs the specified string(s).</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="05-understanding-responses.html" class="btn btn-outline">← Previous: Understanding Responses</a>
+      <a href="07-error-handling.html" class="btn btn-primary">Next: Error Handling →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

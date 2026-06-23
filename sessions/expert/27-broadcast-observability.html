@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 27: Broadcast & Observability — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/expert.html">Expert</a> <span>›</span>
+      Session 27
+    </div>
+    <h1>Session 27: Broadcast & Observability</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 35 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🚀 Expert</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="expert-27">
+      <input type="checkbox" id="complete-e27">
+      <label for="complete-e27" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>What is Broadcast?</h3>
+      <p>Broadcast is OpenRouter's observability pipeline. It sends traces of every API call to your chosen observability platform with zero code changes. Flip a switch in the dashboard and start receiving latency, token usage, cost, model selection, provider info, and error data — all without modifying a single line of your application code.</p>
+
+      <h3>Supported Platforms</h3>
+      <p>OpenRouter Broadcast integrates with a wide range of platforms: Langfuse, Datadog, Braintrust, ClickHouse, Comet Opik, Grafana Cloud, LangSmith, New Relic, PostHog, Sentry, S3 (for long-term archival), Snowflake, Webhook (for custom pipelines), and more. This makes it easy to fit into your existing observability stack regardless of your platform preference.</p>
+
+      <h3>What You Get</h3>
+      <p>Every trace includes: request and response timestamps (latency), token counts (prompt and completion), cost breakdown, model selected, provider that handled the request, any errors or retries, and guardrail events. This data is essential for debugging, cost analysis, and performance monitoring.</p>
+
+      <h3>Debug Mode</h3>
+      <p>Enable <code>debug: { echo_upstream_body: true }</code> to see exactly what request body OpenRouter sent to the upstream provider. This is invaluable for troubleshooting provider-specific issues, understanding how OpenRouter transforms your request, and verifying that your parameters are being passed correctly.</p>
+
+      <h3>Router Metadata</h3>
+      <p>Opt in to receive metadata about the routing decision: which provider was selected, what fallbacks were attempted, and which pipeline stages were executed. This gives you full visibility into the routing layer, helping you understand why a particular provider was chosen and whether fallbacks were triggered.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Enable debug mode to inspect the transformed request sent to the provider:</p>
+
+      <pre><code>python3 -c "
+import requests, os, json
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+resp = requests.post(url, headers=headers, json={
+    'model': 'openai/gpt-4o-mini:free',
+    'messages': [{'role': 'user', 'content': 'Hello!'}],
+    'stream': True,
+    'debug': {'echo_upstream_body': True},
+})
+
+buffer = ''
+for chunk in resp.iter_content(chunk_size=1024, decode_unicode=True):
+    buffer += chunk
+    while '\n' in buffer:
+        line, buffer = buffer.split('\n', 1)
+        line = line.strip()
+        if line.startswith('data: '):
+            data = line[6:]
+            if data == '[DONE]':
+                break
+            try:
+                parsed = json.loads(data)
+                if parsed.get('debug', {}).get('echo_upstream_body'):
+                    print('Transformed request body sent to provider:')
+                    print(json.dumps(parsed['debug']['echo_upstream_body'], indent=2))
+                content = parsed.get('choices', [{}])[0].get('delta', {}).get('content', '')
+                if content:
+                    print(content, end='', flush=True)
+            except:
+                pass
+"</code></pre>
+
+      <p><strong>Try this:</strong> Add different model parameters (temperature, max_tokens, response_format) and observe how the transformed request body changes. This is a powerful debugging technique for understanding exactly what reaches the provider.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What is the primary purpose of OpenRouter Broadcast?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>To broadcast the same request to multiple providers simultaneously</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>To send traces of every API call to your observability platform with zero code changes</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>To distribute API keys across a team</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>To cache responses for faster delivery</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Broadcast pushes observability data to your platform automatically without requiring code changes.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> Which of the following is NOT a supported Broadcast platform?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Datadog</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Langfuse</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Slack</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Grafana Cloud</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — Slack is not a supported observability platform. Supported platforms include Datadog, Langfuse, Grafana Cloud, and many others.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What does <code>debug: { echo_upstream_body: true }</code> do?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>It logs all errors to the console</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>It shows the exact request body OpenRouter sent to the upstream provider</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>It enables verbose logging on the server</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>It returns the raw HTTP response headers</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — It echoes the transformed request body that OpenRouter sends to the upstream provider for debugging purposes.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What information does router metadata provide?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Only the final response content</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Which provider was selected, fallback attempts, and pipeline stages</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>The user's IP address</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>The API key owner's email</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Router metadata reveals which provider was chosen, what fallbacks were attempted, and which pipeline stages ran.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> What data is included in a Broadcast trace?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Only token counts</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Only cost data</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Latency, token usage, cost, model selection, provider info, and error tracking</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Only error logs</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — Traces include a comprehensive set of telemetry: latency, tokens, cost, model, provider, and error data.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="26-workspaces-budgets.html" class="btn btn-outline">← Previous: Workspaces, Budgets & Presets</a>
+      <a href="28-evals-benchmarks.html" class="btn btn-primary">Next: Evals & Benchmarks →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

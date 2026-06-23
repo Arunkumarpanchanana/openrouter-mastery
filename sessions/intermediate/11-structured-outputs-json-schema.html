@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 11: Structured Outputs & JSON Schema — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/intermediate.html">Intermediate</a> <span>›</span>
+      Session 11
+    </div>
+    <h1>Session 11: Structured Outputs & JSON Schema</h1>
+    <div class="session-meta">
+      <span class="meta-item">⏱ 35 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">💻 Intermediate</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+    <div class="completion-toggle" data-session-id="intermediate-11">
+      <input type="checkbox" id="complete-i11">
+      <label for="complete-i11" class="toggle-label">Mark as complete</label>
+    </div>
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>The Problem with Unstructured Text</h3>
+      <p>LLMs return unstructured text by default. Parsing it programmatically is fragile — one typo, slightly different phrasing, or an unexpected format can break your entire pipeline. JSON parsing errors, regex failures, and silent data corruption are common when you try to extract structured data from natural language output.</p>
+
+      <h3>The <code>response_format</code> Parameter</h3>
+      <p>OpenRouter's <code>response_format</code> parameter forces the model to return valid JSON. It has two modes:</p>
+      <ul>
+        <li><strong><code>json_object</code></strong> — The model returns any valid JSON. You define no schema; the model decides the structure based on the prompt.</li>
+        <li><strong><code>json_schema</code></strong> — You provide an exact JSON Schema definition and <code>strict: true</code> guarantees the output matches it perfectly.</li>
+      </ul>
+
+      <h3>JSON Schema Definition</h3>
+      <p>A JSON Schema defines the shape of your data. Key fields include:</p>
+      <ul>
+        <li><strong><code>type</code></strong> — Always <code>"object"</code> at the top level</li>
+        <li><strong><code>properties</code></strong> — Each field with its own type (<code>string</code>, <code>number</code>, <code>array</code>, etc.) and an optional <code>description</code></li>
+        <li><strong><code>required</code></strong> — Array of field names that must be present</li>
+        <li><strong><code>additionalProperties</code></strong> — Set to <code>false</code> to prevent extra fields</li>
+        <li><strong><code>strict: true</code></strong> — Guarantees the output matches the schema exactly</li>
+      </ul>
+
+      <h3>When to Use Structured Outputs</h3>
+      <p>Use this feature for: extraction pipelines (pulling data from documents), data processing (normalizing messy input), API integrations (generating structured payloads), form filling, database inserts, and any workflow where downstream code depends on consistent field names and types.</p>
+
+      <h3>Model Support</h3>
+      <p>Check <code>supported_parameters</code> for the model to see if it supports <code>"structured_outputs"</code>. Use <code>require_parameters: true</code> in your provider config to ensure only compatible providers handle your request. Not all models support structured outputs.</p>
+    </section>
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Extract structured financial data from unstructured text using JSON schema:</p>
+
+      <pre><code>python3 -c "
+import requests, os, json
+
+url = 'https://openrouter.ai/api/v1/chat/completions'
+headers = {'Authorization': f'Bearer {os.environ[\"OPENROUTER_API_KEY\"]}'}
+
+text = 'Apple Inc. reported Q3 revenue of \$85.8 billion on August 1st, 2024. Tim Cook announced the results.'
+
+response = requests.post(url, headers=headers, json={
+    'model': 'openai/gpt-4o-mini:free',
+    'messages': [{'role': 'user', 'content': f'Extract financial data from: {text}'}],
+    'response_format': {
+        'type': 'json_schema',
+        'json_schema': {
+            'name': 'financial_data',
+            'strict': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'company': {'type': 'string', 'description': 'Company name'},
+                    'revenue_billions': {'type': 'number', 'description': 'Revenue in billions'},
+                    'quarter': {'type': 'string', 'description': 'Fiscal quarter'},
+                    'date': {'type': 'string', 'description': 'Announcement date'},
+                    'ceo': {'type': 'string', 'description': 'CEO name'}
+                },
+                'required': ['company', 'revenue_billions', 'quarter', 'date'],
+                'additionalProperties': False
+            }
+        }
+    }
+})
+
+data = response.json()
+result = json.loads(data['choices'][0]['message']['content'])
+print(json.dumps(result, indent=2))
+print(f\"\\nCompany: {result['company']}, Revenue: \${result['revenue_billions']}B\")
+"</code></pre>
+
+      <p><strong>Try this:</strong> Modify the schema to extract additional fields like stock ticker or net income. Change the input text to a different company's earnings report and see how the extraction handles it.</p>
+    </section>
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What is the difference between <code>json_object</code> and <code>json_schema</code> in <code>response_format</code>?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>json_object is for arrays, json_schema is for objects</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>json_object returns any valid JSON, json_schema enforces an exact schema</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>They are interchangeable names for the same feature</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>json_schema only works with OpenAI models</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — json_object lets the model decide the structure; json_schema enforces your exact schema definition.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> What does <code>strict: true</code> do in a JSON schema configuration?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>It makes the model refuse to answer</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>It guarantees the output matches the schema exactly</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>It enables additional properties automatically</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>It requires using the most expensive model</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Strict mode guarantees the model's output will conform exactly to the provided schema.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What does setting <code>additionalProperties: false</code> do in a JSON Schema?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>It prevents the model from adding fields not defined in properties</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>It deletes unspecified fields from the output</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>It allows only string type properties</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>It has no effect when strict mode is on</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>a</strong> — It prevents the model from adding extra fields that are not listed in the properties definition.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> How can you check if a model supports structured outputs?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Check the model name for 'json' prefix</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Check the model's supported_parameters for 'structured_outputs'</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>All models support structured outputs by default</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Only paid models support this feature</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Look for 'structured_outputs' in the model's supported_parameters field. Not all models support it.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> Which of the following is the best use case for structured outputs?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Creative storytelling</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Extracting named fields from documents reliably</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Generating HTML pages</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Streaming long-form content</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Structured outputs excel at extraction pipelines where downstream code needs consistent, typed data.</p></details>
+      </div>
+    </section>
+    <nav class="prev-next">
+      <a href="../beginner/10-beginner-capstone.html" class="btn btn-outline">← Previous: Capstone: CLI Chatbot</a>
+      <a href="12-tool-calling-function-use.html" class="btn btn-primary">Next: Tool Calling & Function Use →</a>
+    </nav>
+  </main>
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

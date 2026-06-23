@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 01: What is OpenRouter? — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/beginner.html">Beginner</a> <span>›</span>
+      Session 01
+    </div>
+
+    <h1>Session 01: What is OpenRouter?</h1>
+
+    <div class="session-meta">
+      <span class="meta-item">⏱ 25 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🌱 Beginner</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item tag tag-concepts">Concepts</span>
+      <span class="meta-item tag tag-overview">Overview</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+
+    <div class="completion-toggle" data-session-id="beginner-01">
+      <input type="checkbox" id="complete-b01">
+      <label for="complete-b01" class="toggle-label">Mark as complete</label>
+    </div>
+
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>What is OpenRouter?</h3>
+      <p>OpenRouter is a unified API gateway that provides access to <strong>400+ models</strong> from dozens of providers — OpenAI, Anthropic, Google, Meta, Mistral, DeepSeek, and many more. Instead of signing up for 10 different APIs with 10 different billing systems and 10 different SDKs, you get <strong>one account, one API key, one billing system</strong>.</p>
+
+      <h3>Why It Exists</h3>
+      <p>The AI model landscape is exploding. New models launch weekly. OpenRouter solves four key problems:</p>
+      <ul>
+        <li><strong>Fragmentation</strong> — N different APIs to learn and integrate</li>
+        <li><strong>Vendor lock-in</strong> — Get stuck with a single provider's ecosystem</li>
+        <li><strong>Cost optimization</strong> — Hard to compare prices across providers</li>
+        <li><strong>Availability</strong> — Individual providers go down; OpenRouter routes around failures</li>
+      </ul>
+
+      <h3>Model Flexibility as a Cost Lever</h3>
+      <p>You can swap models by changing <strong>one string</strong> in your code. When a cheaper or better model launches tomorrow, you can try it instantly without rewriting anything.</p>
+
+      <h3>How Routing Works</h3>
+      <p>Your request goes to OpenRouter → the best available provider is selected → the response comes back. You don't care which GPU or data center ran it. The abstraction is complete.</p>
+
+      <h3>The API Key</h3>
+      <p>Your account identifier. All requests are authenticated via a Bearer token in the <code>Authorization</code> header. Every API key is associated with your account and can be managed from the dashboard.</p>
+
+      <h3>Free Tier</h3>
+      <p>OpenRouter offers <code>:free</code> model variants — zero-cost inference on select community models. This is perfect for learning, prototyping, and experimentation without spending a cent.</p>
+    </section>
+
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <ol>
+        <li>Visit <a href="https://openrouter.ai" target="_blank" rel="noopener">openrouter.ai</a></li>
+        <li>Create an account (or sign in if you already have one)</li>
+        <li>Explore the dashboard to get familiar with the layout</li>
+        <li>Find the <strong>API Keys</strong> page in your account settings</li>
+        <li>Browse the <strong>Models</strong> page to see the ecosystem of available models</li>
+        <li>Verify your API key works with curl:</li>
+      </ol>
+
+      <pre><code>curl -fsSL https://openrouter.ai/api/v1/auth/key \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY"</code></pre>
+
+      <p>If your key is set correctly, you'll receive a JSON response with your key details. If not, you'll see an authentication error.</p>
+    </section>
+
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What does OpenRouter do?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>It's a single model provider</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>It's a unified API gateway to 400+ models</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>It's an AI model training platform</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>It's a GPU cloud provider</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — OpenRouter aggregates 400+ models behind a single API, so you use one key and one billing system.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> Which of the following is NOT a problem OpenRouter solves?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>API fragmentation across providers</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Vendor lock-in</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Model training costs</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Cost optimization across providers</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — OpenRouter doesn't handle model training. It provides access to already-trained models from various providers.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> How do you authenticate requests to OpenRouter?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Username and password in the request body</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>API key in an Authorization: Bearer header</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>OAuth 2.0 client credentials flow</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>IP-based allowlisting</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — OpenRouter uses Bearer token authentication via the Authorization header with your API key.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> How does model routing work in OpenRouter?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>You specify the exact provider and GPU</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>OpenRouter selects the best available provider automatically</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>You must deploy models yourself on your own infrastructure</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Each provider has a separate endpoint you must call directly</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — OpenRouter handles provider selection and routing behind the scenes. You just specify the model name.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> What is the <code>:free</code> model variant in OpenRouter?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>A free trial period for paid models</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Community models available at zero cost with rate limits</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Models limited to 100 requests per day</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Open-source models only</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The <code>:free</code> suffix indicates community-hosted models available for inference at zero cost.</p></details>
+      </div>
+    </section>
+
+    <nav class="prev-next">
+      <a href="../../sections/beginner.html" class="btn btn-outline">← Back to Beginner Track</a>
+      <a href="02-signup-and-api-key.html" class="btn btn-primary">Next: Sign Up & API Keys →</a>
+    </nav>
+  </main>
+
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 03: The Models Ecosystem — OpenRouter Mastery</title>
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="../../index.html" class="site-logo">OpenRouter Mastery</a>
+      <nav class="site-nav">
+        <a href="../../index.html">Home</a>
+        <a href="../../sections/beginner.html">Beginner</a>
+        <a href="../../sections/intermediate.html">Intermediate</a>
+        <a href="../../sections/expert.html">Expert</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="content-container">
+    <div class="breadcrumb">
+      <a href="../../index.html">Home</a> <span>›</span>
+      <a href="../../sections/beginner.html">Beginner</a> <span>›</span>
+      Session 03
+    </div>
+
+    <h1>Session 03: The Models Ecosystem</h1>
+
+    <div class="session-meta">
+      <span class="meta-item">⏱ 30 min</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">🌱 Beginner</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item tag tag-models">Models</span>
+      <span class="meta-item tag tag-exploration">Exploration</span>
+      <span class="meta-item divider">·</span>
+      <span class="meta-item">📝 5 Quiz Questions</span>
+    </div>
+
+    <nav class="page-nav">
+      <a href="#learn">📖 Learn</a>
+      <a href="#lab">🔬 Lab</a>
+      <a href="#quiz">📝 Quiz</a>
+    </nav>
+
+    <div class="completion-toggle" data-session-id="beginner-03">
+      <input type="checkbox" id="complete-b03">
+      <label for="complete-b03" class="toggle-label">Mark as complete</label>
+    </div>
+
+    <section id="learn" class="session-content">
+      <h2>Learn</h2>
+
+      <h3>The /api/v1/models Endpoint</h3>
+      <p>OpenRouter's <code>/api/v1/models</code> endpoint is your directory of every available model. It returns a comprehensive catalog you can query programmatically.</p>
+
+      <h3>Response Format</h3>
+      <p>Each model entry includes:</p>
+      <ul>
+        <li><strong>id</strong> — The model identifier string (e.g., <code>openai/gpt-4o-mini:free</code>)</li>
+        <li><strong>name</strong> — A human-readable name</li>
+        <li><strong>pricing</strong> — Prompt and completion costs per token</li>
+        <li><strong>context_length</strong> — Maximum tokens the model can process</li>
+        <li><strong>architecture</strong> — Model architecture type</li>
+        <li><strong>supported_parameters</strong> — Features like tool calling, structured outputs</li>
+      </ul>
+
+      <h3>Understanding Pricing</h3>
+      <p>Two fields matter when calculating cost:</p>
+      <ul>
+        <li><strong>prompt</strong> — Cost per input token</li>
+        <li><strong>completion</strong> — Cost per output token</li>
+      </ul>
+      <p>Always consider both. Some models are cheap for input but expensive for output, and vice versa.</p>
+
+      <h3>Finding Free Models</h3>
+      <p>Models with the <code>:free</code> variant suffix are available for zero-cost inference. They are rate-limited but perfect for learning. You can find them by filtering the model list for IDs containing <code>:free</code>.</p>
+
+      <h3>Filtering and Sorting</h3>
+      <p>You can filter models by <code>output_modalities</code> (text, image, audio), <code>supported_parameters</code> (tool calling, structured outputs), and sort by price, throughput, or latency. This makes it easy to programmatically find the right model for any task.</p>
+    </section>
+
+    <section id="lab" class="session-content">
+      <h2>Lab</h2>
+
+      <p>Query the models endpoint and explore the ecosystem:</p>
+
+      <pre><code>python3 -c "
+import requests
+
+response = requests.get('https://openrouter.ai/api/v1/models')
+data = response.json()
+
+print(f'Total models: {len(data[\"data\"])}')
+print()
+
+# Inspect the first model's structure
+print('Sample model entry:')
+for key, value in data['data'][0].items():
+    print(f'  {key}: {value}')
+"</code></pre>
+
+      <p>Find free and cheapest models:</p>
+
+      <pre><code>python3 -c "
+import requests
+
+response = requests.get('https://openrouter.ai/api/v1/models')
+data = response.json()
+
+# Find free models
+free_models = [m for m in data['data'] if ':free' in m['id']]
+print(f'Free models: {len(free_models)}')
+for m in free_models[:5]:
+    print(f'  {m[\"id\"]} — {m[\"name\"]}')
+
+print()
+
+# Sort by price (cheapest first)
+sorted_models = sorted(
+    data['data'],
+    key=lambda m: float(m['pricing']['prompt']) + float(m['pricing']['completion'])
+)
+print('Cheapest models:')
+for m in sorted_models[:5]:
+    price = float(m['pricing']['prompt']) + float(m['pricing']['completion'])
+    print(f'  {m[\"id\"]} — \${price:.8f}/token')
+"</code></pre>
+
+      <p>Filter by context length and capabilities:</p>
+
+      <pre><code>python3 -c "
+import requests
+
+response = requests.get('https://openrouter.ai/api/v1/models')
+data = response.json()
+
+# Models with 128K+ context
+large_ctx = [m for m in data['data'] if m.get('context_length', 0) >= 128000]
+print(f'Models with 128K+ context: {len(large_ctx)}')
+for m in large_ctx[:5]:
+    print(f'  {m[\"id\"]} — {m[\"context_length\"]} tokens')
+
+print()
+
+# Models that support tool calling
+tool_models = [
+    m for m in data['data']
+    if 'tools' in m.get('supported_parameters', [])
+]
+print(f'Models with tool calling: {len(tool_models)}')
+for m in tool_models[:5]:
+    print(f'  {m[\"id\"]}')
+"</code></pre>
+    </section>
+
+    <section id="quiz" class="session-content">
+      <h2>Quiz</h2>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q1.</strong> What information does the <code>/api/v1/models</code> endpoint return?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Only model names and IDs</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Full model directory with pricing, context length, and capabilities</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Your account's recently used models</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Only models you have credits for</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The models endpoint returns the complete catalog with pricing, context length, architecture, and supported parameters.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q2.</strong> The <code>:free</code> variant suffix in a model ID indicates what?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>A model that costs credits to use</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>A model variant available at zero cost with rate limits</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>A deprecated or legacy model</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>A premium model with enhanced privacy</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The <code>:free</code> suffix means the model is available for zero-cost inference, though it may have rate limits.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q3.</strong> What does the <code>pricing.prompt</code> field represent?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Cost per character of input</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Cost per token of input</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Cost per API request</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Monthly subscription fee for the model</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The prompt price is the cost per token of input sent to the model.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q4.</strong> What does <code>context_length</code> specify in the models response?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>The maximum number of tokens the model can generate in one response</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>The total tokens the model can process (input + output combined)</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>The length of the model's training dataset</span></label>
+          <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>The API timeout duration for that model</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Context length is the maximum number of tokens a model can handle for input plus generated output combined.</p></details>
+      </div>
+
+      <div class="quiz-question">
+        <p class="question-text"><strong>Q5.</strong> How would you programmatically find the cheapest available model?</p>
+        <div class="options">
+          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Sort models alphabetically by name</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Sort by the sum of prompt + completion price in ascending order</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Filter by context length only</span></label>
+          <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Check which models have the shortest IDs</span></label>
+        </div>
+        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Adding prompt and completion prices gives you the total cost per token. Sorting ascending finds the cheapest model for your workload.</p></details>
+      </div>
+    </section>
+
+    <nav class="prev-next">
+      <a href="02-signup-and-api-key.html" class="btn btn-outline">← Previous: Sign Up & API Keys</a>
+      <a href="04-your-first-api-call.html" class="btn btn-primary">Next: Your First API Call →</a>
+    </nav>
+  </main>
+
+  <script src="../../assets/js/progress.js"></script>
+</body>
+</html>
