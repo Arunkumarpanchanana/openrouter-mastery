@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="expert-25">
       <input type="checkbox" id="complete-e25">
       <label for="complete-e25" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>Prompt Injection Detection</h3>
@@ -64,8 +64,8 @@
 
       <h3>Data Collection Policy & ZDR</h3>
       <p>Use <code>provider.data_collection: "deny"</code> to exclude providers that collect and store your data for training. For maximum privacy, enable <strong>Zero Data Retention (ZDR)</strong> — configurable per request or per key — ensuring neither OpenRouter nor the upstream provider stores your prompts or completions.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Test guardrail detection by sending different types of prompts:</p>
@@ -100,8 +100,8 @@ for prompt in test_prompts:
 "</code></pre>
 
       <p><strong>Try this:</strong> Add more test prompts — try encoding-sensitive data like emails or phone numbers to see if the sensitive info guardrail catches them. Test edge cases like base64-encoded injections.</p>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
@@ -109,61 +109,57 @@ for prompt in test_prompts:
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>200</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>400</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>403</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="c"> <span>403</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>429</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — Guardrail blocks return a 403 response with metadata explaining why the request was blocked.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> What types of patterns can prompt injection detection guard against?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>SQL injection patterns only</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>"Ignore all previous instructions" style attacks and similar injection patterns</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>"Ignore all previous instructions" style attacks and similar injection patterns</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>XSS attacks only</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Network-level attacks only</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Prompt injection detection catches instruction override attempts and similar injection-style attacks.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> What are the two modes available for the Sensitive Info guardrail?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Log and ignore</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Block and redact</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>Block and redact</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Encrypt and store</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Warn and proceed</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Block prevents the request entirely; redact masks sensitive content but allows the request through.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What is Zero Data Retention (ZDR)?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>A feature that deletes old API keys</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>A policy ensuring OpenRouter and the provider do not store your prompts or completions</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>A policy ensuring OpenRouter and the provider do not store your prompts or completions</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>A backup retention policy</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>A caching mechanism for faster responses</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — ZDR guarantees that neither OpenRouter nor the upstream provider retains your prompts or completions.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> What happens when a key hits its budget limit?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>The key is deleted</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Requests are automatically blocked until the budget resets</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>Requests are automatically blocked until the budget resets</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>The account is charged extra</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Requests continue but with degraded quality</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Requests are blocked when the budget is met, preventing additional costs until the budget period resets.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="24-agent-sdk-deep-dive.html" class="btn btn-outline">← Previous: Agent SDK Deep Dive</a>
       <a href="26-workspaces-budgets.html" class="btn btn-primary">Next: Workspaces, Budgets & Presets →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="intermediate-21">
       <input type="checkbox" id="complete-i21">
       <label for="complete-i21" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>Bringing It All Together</h3>
@@ -60,8 +60,8 @@
         <li><strong>Error isolation</strong> — A failure in one tool shouldn't crash the entire loop. Wrap tool execution in try/except and return meaningful error messages to the model so it can recover.</li>
         <li><strong>Tool routing</strong> — Use a dispatch map to route <code>function.name</code> strings to Python functions cleanly.</li>
       </ul>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Build a research agent with multiple tools — Wikipedia search, math calculation, and time lookup:</p>
@@ -127,70 +127,66 @@ for i in range(MAX_ITER):
         print(f"\nFinal answer:\n{msg['content']}")
         break
 EOF</code></pre>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> What is the key characteristic of a multi-tool agent?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>It uses multiple models simultaneously</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>It has multiple tool definitions and the model chooses which to call based on the task</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>It has multiple tool definitions and the model chooses which to call based on the task</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>It runs on multiple servers</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>It processes multiple user requests in parallel</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — A multi-tool agent defines several tools and the model reasons about which to call based on the current needs.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> What determines which tool the model chooses to call?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>The order tools are listed in the array</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>The tool's <code>name</code> field alphabetically</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>The tool's <code>description</code> and the current task context</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="c"> <span>The tool's <code>description</code> and the current task context</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>User specifies which tool to use</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — The model reads tool descriptions and decides which tool fits the current task. Clear descriptions are essential.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> How should errors in tool execution be handled?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Let the exception crash the loop — the model will retry</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Wrap each tool in try/except and return a descriptive error message to the model</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>Wrap each tool in try/except and return a descriptive error message to the model</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Ignore errors and continue to the next turn</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Log the error and terminate the agent</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Error isolation via try/except lets the model see the error and potentially recover by calling a different tool or rephrasing.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> Why must message history be preserved across agent turns?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>It's optional — only the latest turn matters</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>The model needs access to previous tool results and reasoning to continue coherently</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>The model needs access to previous tool results and reasoning to continue coherently</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>For debugging purposes only</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>The API requires it</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Previous tool results and model reasoning are needed for the model to build on earlier work and maintain coherence across turns.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> What is the research agent pattern?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Model responds directly to every query without tools</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>User asks question → model searches sources → extracts structured data → synthesizes answer</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>User asks question → model searches sources → extracts structured data → synthesizes answer</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Model generates code, executes it, and returns results</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Multiple models vote on the best answer</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The research agent searches external sources, extracts structured data, and synthesizes everything into a coherent answer.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="20-prompt-caching.html" class="btn btn-outline">← Previous: Prompt Caching</a>
       <a href="../../sections/expert.html" class="btn btn-primary">Continue to Expert →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

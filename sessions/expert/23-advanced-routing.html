@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="expert-23">
       <input type="checkbox" id="complete-e23">
       <label for="complete-e23" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>Auto Router (NotDiamond)</h3>
@@ -64,8 +64,8 @@
 
       <h3>Partition Sorting</h3>
       <p>When using model fallbacks, <code>partition: "none"</code> sorts across ALL models and endpoints globally rather than within each partition. This gives you the best overall price or performance across all available options instead of the best within a single provider group.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Compare different routing strategies side by side:</p>
@@ -96,70 +96,66 @@ for router in routers:
 "</code></pre>
 
       <p><strong>Try this:</strong> Add more routers to compare — try the Fusion Router (<code>openrouter/fusion</code>) with a more complex question that benefits from multi-model deliberation.</p>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> How does the Auto Router (NotDiamond) decide which model to use?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>It randomly selects from available models</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>It analyzes each prompt and selects the optimal model based on capability and cost</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>It analyzes each prompt and selects the optimal model based on capability and cost</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>It always uses the most expensive model</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>It uses a fixed model regardless of the prompt</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The Auto Router analyzes each prompt's complexity and routes to the best model for that specific request.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> What is unique about the Fusion Router?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>It only works with OpenAI models</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>A panel of models responds and a judge synthesizes the best answer in a single API call</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>A panel of models responds and a judge synthesizes the best answer in a single API call</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>It merges multiple prompts into one request</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>It splits a prompt across multiple models in parallel</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Fusion uses multi-model deliberation where several models respond and a judge picks the best answer.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> When would you use the Pareto Router?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>When you need the absolute fastest response time</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>When routing coding requests that need a minimum benchmark score</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>When routing coding requests that need a minimum benchmark score</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>When you want to use only free models</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>When you want to route by geographic location</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The Pareto Router filters models by a minimum coding benchmark score, ensuring code quality.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What does <code>partition: "none"</code> do in the context of model fallbacks?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>It disables all fallback behavior</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>It sorts across ALL models and endpoints globally, not just within a provider group</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>It sorts across ALL models and endpoints globally, not just within a provider group</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>It creates new provider partitions automatically</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>It limits routing to one provider only</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Partition: none performs global sorting across all models and endpoints for the best overall selection.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> What is the benefit of using <code>~author/family-latest</code> model slugs?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>They are always the cheapest option</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>They auto-route to the newest model in a family without updating model IDs</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>They auto-route to the newest model in a family without updating model IDs</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>They only work with open-source models</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>They provide faster response times by default</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Latest resolution slugs automatically point to the newest model version, eliminating manual updates on release.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="22-cost-optimization.html" class="btn btn-outline">← Previous: Cost Optimization Architecture</a>
       <a href="24-agent-sdk-deep-dive.html" class="btn btn-primary">Next: Agent SDK Deep Dive →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

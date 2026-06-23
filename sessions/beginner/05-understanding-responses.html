@@ -38,19 +38,18 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
 
     <div class="completion-toggle" data-session-id="beginner-05">
       <input type="checkbox" id="complete-b05">
       <label for="complete-b05" class="toggle-label">Mark as complete</label>
     </div>
 
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>Response Anatomy</h3>
@@ -86,9 +85,9 @@
 
       <h3>The Generation ID</h3>
       <p>Save the <code>id</code> field. You can use it later to query generation details via the <code>/api/v1/generation/{id}</code> endpoint, which returns token usage, cost, and other metadata.</p>
-    </section>
+    </div>
 
-    <section id="lab" class="session-content">
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Send a request and parse the full response to understand every field:</p>
@@ -155,66 +154,61 @@ print(f'Finish reason: {choice[\"finish_reason\"]} (expected: length)')
 print(f'Completion tokens: {usage[\"completion_tokens\"]} (≈ max_tokens=20)')
 print(f'Content preview: {choice[\"message\"][\"content\"][:50]}...')
 "</code></pre>
-    </section>
+    </div>
 
-    <section id="quiz" class="session-content">
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> What does the <code>id</code> field in the API response represent?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Your user account ID</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>A unique generation ID for auditing and debugging</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>A unique generation ID for auditing and debugging</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>The model's internal identifier</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Your current session ID</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The <code>id</code> is a unique identifier for that specific generation, useful for auditing and tracing.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> Which <code>finish_reason</code> indicates the model finished generating naturally?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>length</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>stop</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>stop</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>error</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>content_filter</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — <code>stop</code> means the model completed its response naturally. <code>length</code> means it hit the max_tokens limit.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> How is the cost of an API call calculated?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Total tokens × a flat per-token rate</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>(prompt_tokens × prompt_price) + (completion_tokens × completion_price)</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>(prompt_tokens × prompt_price) + (completion_tokens × completion_price)</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>(input_tokens + output_tokens) × average price</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>A flat fee per API request</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Input and output tokens are priced separately, so you multiply each by its respective rate and sum them.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What information does the <code>usage</code> object in the response contain?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>The model name and provider</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>prompt_tokens, completion_tokens, and total_tokens</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>prompt_tokens, completion_tokens, and total_tokens</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Request and response headers</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Error codes and their descriptions</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The usage object contains the token counts for input, output, and the total.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> What can you do with the generation ID from an API response?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Delete the generation from your history</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Query usage stats via the /api/v1/generation endpoint</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>Query usage stats via the /api/v1/generation endpoint</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Modify the model's response content</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Reuse it as an API key for future requests</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The generation ID lets you look up detailed metadata about that specific request, including token usage and cost.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
 
     <nav class="prev-next">
       <a href="04-your-first-api-call.html" class="btn btn-outline">← Previous: Your First API Call</a>
@@ -223,5 +217,6 @@ print(f'Content preview: {choice[\"message\"][\"content\"][:50]}...')
   </main>
 
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

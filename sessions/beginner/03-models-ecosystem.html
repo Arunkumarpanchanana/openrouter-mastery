@@ -38,19 +38,18 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
 
     <div class="completion-toggle" data-session-id="beginner-03">
       <input type="checkbox" id="complete-b03">
       <label for="complete-b03" class="toggle-label">Mark as complete</label>
     </div>
 
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>The /api/v1/models Endpoint</h3>
@@ -80,9 +79,9 @@
 
       <h3>Filtering and Sorting</h3>
       <p>You can filter models by <code>output_modalities</code> (text, image, audio), <code>supported_parameters</code> (tool calling, structured outputs), and sort by price, throughput, or latency. This makes it easy to programmatically find the right model for any task.</p>
-    </section>
+    </div>
 
-    <section id="lab" class="session-content">
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Query the models endpoint and explore the ecosystem:</p>
@@ -154,66 +153,61 @@ print(f'Models with tool calling: {len(tool_models)}')
 for m in tool_models[:5]:
     print(f'  {m[\"id\"]}')
 "</code></pre>
-    </section>
+    </div>
 
-    <section id="quiz" class="session-content">
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> What information does the <code>/api/v1/models</code> endpoint return?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Only model names and IDs</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Full model directory with pricing, context length, and capabilities</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>Full model directory with pricing, context length, and capabilities</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Your account's recently used models</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Only models you have credits for</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The models endpoint returns the complete catalog with pricing, context length, architecture, and supported parameters.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> The <code>:free</code> variant suffix in a model ID indicates what?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>A model that costs credits to use</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>A model variant available at zero cost with rate limits</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>A model variant available at zero cost with rate limits</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>A deprecated or legacy model</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>A premium model with enhanced privacy</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The <code>:free</code> suffix means the model is available for zero-cost inference, though it may have rate limits.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> What does the <code>pricing.prompt</code> field represent?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Cost per character of input</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Cost per token of input</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>Cost per token of input</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Cost per API request</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Monthly subscription fee for the model</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The prompt price is the cost per token of input sent to the model.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What does <code>context_length</code> specify in the models response?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>The maximum number of tokens the model can generate in one response</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>The total tokens the model can process (input + output combined)</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>The total tokens the model can process (input + output combined)</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>The length of the model's training dataset</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>The API timeout duration for that model</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Context length is the maximum number of tokens a model can handle for input plus generated output combined.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> How would you programmatically find the cheapest available model?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Sort models alphabetically by name</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Sort by the sum of prompt + completion price in ascending order</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>Sort by the sum of prompt + completion price in ascending order</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Filter by context length only</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Check which models have the shortest IDs</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Adding prompt and completion prices gives you the total cost per token. Sorting ascending finds the cheapest model for your workload.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
 
     <nav class="prev-next">
       <a href="02-signup-and-api-key.html" class="btn btn-outline">← Previous: Sign Up & API Keys</a>
@@ -222,5 +216,6 @@ for m in tool_models[:5]:
   </main>
 
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

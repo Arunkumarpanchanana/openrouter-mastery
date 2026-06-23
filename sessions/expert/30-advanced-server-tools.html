@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="expert-30">
       <input type="checkbox" id="complete-e30">
       <label for="complete-e30" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>Advisor Tool</h3>
@@ -61,8 +61,8 @@
 
       <h3>Server vs. Client Tools</h3>
       <p>Server tools run on OpenRouter's infrastructure — no server management needed on your end. This differs from client tools which run in your application. Server tools are zero-infrastructure: you just configure them in the API request and OpenRouter handles execution.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Use the Fusion pattern via OpenRouter's server tools to get a deliberated answer from multiple models:</p>
@@ -86,70 +86,66 @@ print(f'\nModel used: {data.get(\"model\", \"N/A\")}')
 "</code></pre>
 
       <p><strong>Try this:</strong> Compare a Fusion response to a single-model response for the same prompt. Notice how the Fusion output incorporates perspectives from multiple models, often producing more balanced and nuanced answers.</p>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> What does the Advisor tool do?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>It advises the user on which model to choose</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>It lets a fast/cheap model consult a smarter model when uncertain</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>It lets a fast/cheap model consult a smarter model when uncertain</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>It provides investment advice for AI startups</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>It recommends API pricing tiers</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The Advisor implements the FrugalGPT/RouteLLM pattern where cheap models escalate to smarter models only when needed.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> How does the Subagent tool work?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>It spawns multiple copies of the same model for redundancy</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>A large model breaks work into subtasks and delegates to smaller worker models</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>A large model breaks work into subtasks and delegates to smaller worker models</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>It replaces the main model with a smaller one</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>It runs models on the client side instead of the server</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The parent model decomposes the task and delegates subtasks to cheaper worker models, handling orchestration automatically.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> What is the Fusion tool pattern?</p>
         <div class="options">
-          <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Multiple models respond and a judge synthesizes the best answer</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="a"> <span>Multiple models respond and a judge synthesizes the best answer</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Two models are merged into one larger model</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Responses are cached and fused for faster delivery</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>APIs from different providers are fused into a single endpoint</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>a</strong> — Fusion uses a panel of models to generate diverse responses, then a judge model selects/synthesizes the best answer.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What does the Apply Patch tool do?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>It applies security patches to OpenRouter servers</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>A model proposes V4A diff patches for file edits and OpenRouter validates them</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>A model proposes V4A diff patches for file edits and OpenRouter validates them</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>It patches network requests for better performance</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>It automatically fixes bugs in generated code</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Apply Patch enables agentic code editing where models propose validated file diffs through OpenRouter's server infrastructure.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> How do server tools differ from client tools?</p>
         <div class="options">
-          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Server tools run on OpenRouter's infrastructure with no server management needed</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="a"> <span>Server tools run on OpenRouter's infrastructure with no server management needed</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Server tools are slower than client tools</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Server tools require dedicated hardware</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Server tools can only be used by enterprise customers</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>a</strong> — Server tools run on OpenRouter's side — zero infrastructure to manage, just configure them in your API request.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="29-production-deployment.html" class="btn btn-outline">← Previous: Production Deployment</a>
       <a href="31-advanced-features.html" class="btn btn-primary">Next: Advanced Features →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

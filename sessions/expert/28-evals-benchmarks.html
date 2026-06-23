@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="expert-28">
       <input type="checkbox" id="complete-e28">
       <label for="complete-e28" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>Why Evals Matter</h3>
@@ -64,8 +64,8 @@
 
       <h3>Design Arena Benchmarks</h3>
       <p>OpenRouter provides Design Arena rankings (ELO, win rate) for some models. These community-driven benchmarks give a signal about relative model quality, but should be supplemented with your own task-specific evals for production decisions.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Build a simple eval harness that compares multiple models across several task categories:</p>
@@ -112,70 +112,66 @@ for model in models_to_eval:
 "</code></pre>
 
       <p><strong>Try this:</strong> Add more eval cases covering different categories, or add more models to compare. The scoring function can also be made more sophisticated — check for semantic similarity instead of substring matching using an embedding model.</p>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> Why do evals matter when choosing between models?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>They are required by OpenRouter's terms of service</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>You cannot optimize what you cannot measure — evals tell you if a cheaper model is good enough</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>You cannot optimize what you cannot measure — evals tell you if a cheaper model is good enough</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>They automatically improve model performance</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>They reduce API costs by 50%</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Evals provide objective measurements that let you make informed decisions about model selection and optimization.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> What are the five steps of the eval loop?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Train, test, deploy, monitor, retrain</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Create eval dataset, run pipeline, score results, adjust model/prompt, repeat</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>Create eval dataset, run pipeline, score results, adjust model/prompt, repeat</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Install, configure, run, debug, deploy</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Design, code, test, review, ship</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The eval loop is: create eval dataset → run pipeline → score results → adjust → repeat.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> Which of the following is NOT a typical metric to measure in evals?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Accuracy (correctness of output)</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Format compliance (follows expected schema)</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Number of API keys used</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="c"> <span>Number of API keys used</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Latency (time to first token)</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — Number of API keys is not a quality metric. Key metrics are accuracy, faithfulness, format compliance, latency, and cost.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> How do you properly compare two models?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Compare their benchmark scores on the OpenRouter leaderboard</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Run the same prompt through both models and score results against ground truth</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>Run the same prompt through both models and score results against ground truth</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Ask each model which one is better</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Compare their prices and pick the most expensive one</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — A fair comparison keeps the prompt fixed and measures each model's output against ground truth for your specific task.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> What is the Design Arena on OpenRouter?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>A visual editor for designing chat interfaces</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>A community-driven ranking system with ELO scores and win rates for some models</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>A community-driven ranking system with ELO scores and win rates for some models</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>A tool for designing API request payloads</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>A marketplace for buying and selling prompts</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Design Arena provides community-driven ELO rankings and win rates that give relative quality signals for models.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="27-broadcast-observability.html" class="btn btn-outline">← Previous: Broadcast & Observability</a>
       <a href="29-production-deployment.html" class="btn btn-primary">Next: Production Deployment →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

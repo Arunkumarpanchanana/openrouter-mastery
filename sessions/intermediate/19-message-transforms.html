@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="intermediate-19">
       <input type="checkbox" id="complete-i19">
       <label for="complete-i19" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>The Problem</h3>
@@ -68,8 +68,8 @@
 
       <h3>Trade-Offs</h3>
       <p>Compression loses some detail from the middle of conversations. The compressed summary may not capture every nuance, but it prevents truncation errors (where the model loses the end of the conversation entirely).</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Enable message transforms and compare behavior with and without compression:</p>
@@ -101,70 +101,66 @@ resp2 = requests.post(url, headers=headers, json={
 })
 print("\nWith transforms:", resp2.json()["choices"][0]["message"]["content"][:200])
 EOF</code></pre>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> Why do message transforms exist in OpenRouter?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>To encrypt messages for security</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Different models have different context windows and some can't handle huge histories</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>Different models have different context windows and some can't handle huge histories</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>To translate messages between languages</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>To format messages for different providers</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Message transforms compress histories so smaller-context models can process them without truncation.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> What does middle-out compression preserve?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Only the user's last message</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>The system prompt and most recent messages, compressing the middle</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>The system prompt and most recent messages, compressing the middle</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Random messages selected from the conversation</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Everything except tool call results</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Middle-out compression keeps the system prompt and latest exchanges, compressing the middle of the conversation.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> How do you enable message transforms?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Set a header <code>X-Compress: true</code></span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Add <code>plugins: [{"id": "context-compression"}]</code> to the request</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>Add <code>plugins: [{"id": "context-compression"}]</code> to the request</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Use a special model variant with <code>:compressed</code> suffix</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Compress the messages manually before sending</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Add the <code>context-compression</code> plugin to the <code>plugins</code> array in the request body.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What is the main trade-off of using message transforms?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>It increases request latency significantly</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Compression loses some detail from the middle of conversations</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>Compression loses some detail from the middle of conversations</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>It only works with paid models</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>It doubles the token count</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Compression summarizes the middle of the conversation, which may lose nuanced details from those exchanges.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> When are message transforms most useful?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Single-turn Q&A with short prompts</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Long-running agents with accumulating history and smaller-context models</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>Long-running agents with accumulating history and smaller-context models</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>When using image inputs</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>When streaming is enabled</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Message transforms are ideal for long agent sessions where history accumulates and context windows are limited.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="18-agent-patterns.html" class="btn btn-outline">← Previous: Building Agent Patterns</a>
       <a href="20-prompt-caching.html" class="btn btn-primary">Next: Prompt Caching →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

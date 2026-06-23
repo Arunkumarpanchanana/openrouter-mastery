@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="beginner-09">
       <input type="checkbox" id="complete-b09">
       <label for="complete-b09" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>One-Line Model Switching</h3>
@@ -65,8 +65,8 @@
 
       <h3>Cost Comparison</h3>
       <p>Prompt and completion pricing varies wildly between models. A model might be cheap on input (prompt tokens) but expensive on output (completion tokens). Always check both rates when estimating costs.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Compare responses and performance across multiple models:</p>
@@ -104,70 +104,66 @@ Tokens: {usage['total_tokens']} (prompt: {usage['prompt_tokens']}, completion: {
 Response: {content}
 \"\"\")
 "</code></pre>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> How do you switch models in OpenRouter?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>You need a new API key for each model</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Change the <code>model</code> string in your request</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>Change the <code>model</code> string in your request</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Use a different API endpoint</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>It requires a configuration file change</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — One-line model switching means only the <code>model</code> parameter changes; everything else stays the same.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> What does the <code>:free</code> suffix do?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Gives unlimited API access</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Routes to community-provided free models with rate limits</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>Routes to community-provided free models with rate limits</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Waives all usage limits</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Skips authentication</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — <code>:free</code> routes to free community models. They're rate-limited but cost nothing.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> Which endpoint lets you compare model pricing and capabilities?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>/api/v1/chat/completions</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>/api/v1/models</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>/api/v1/models</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>/api/v1/keys</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>/api/v1/usage</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The <code>/api/v1/models</code> endpoint lists all available models with pricing and context info.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What's important to check when comparing model costs?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Only the total token limit</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Both prompt and completion pricing separately</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>Both prompt and completion pricing separately</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Only the completion price</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Only the prompt price</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Prompt and completion tokens are priced independently, and the ratio varies by model.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> Why does model flexibility matter?</p>
         <div class="options">
-          <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>It lets you switch between models for cost, quality, or speed without rewriting code</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="a"> <span>It lets you switch between models for cost, quality, or speed without rewriting code</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>It's required by OpenRouter's terms of service</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Models expire monthly</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>You can only use one model per API key</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>a</strong> — Model flexibility lets you optimize for cost, quality, latency, or fallback without architectural changes.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="08-streaming-basics.html" class="btn btn-outline">← Previous: Streaming Basics</a>
       <a href="10-beginner-capstone.html" class="btn btn-primary">Next: Capstone: CLI Chatbot →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

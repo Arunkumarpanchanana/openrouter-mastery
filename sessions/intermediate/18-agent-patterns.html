@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="intermediate-18">
       <input type="checkbox" id="complete-i18">
       <label for="complete-i18" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>The Agent Loop</h3>
@@ -66,8 +66,8 @@
 
       <h3>The Full Pattern</h3>
       <p>System prompt + tool definitions + complete message history = powerful autonomous behavior. The three components work together: the system prompt sets the agent's persona and instructions, tools define what it can do, and message history provides context across turns.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Build a complete agent loop that handles multiple tool calls with Wikipedia search:</p>
@@ -122,70 +122,66 @@ for i in range(MAX_ITER):
 else:
     print("Max iterations reached")
 EOF</code></pre>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> What is the basic structure of the agent loop?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Send request → wait → receive response → done</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Send messages → model requests tool → execute tool → send result → repeat or break</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>Send messages → model requests tool → execute tool → send result → repeat or break</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Define tools → start server → poll for results</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Stream tokens → detect stop sequence → return</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The agent loop is send → model calls tool → execute → return result → model responds → repeat or break.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> Why is maintaining full message history critical in an agent loop?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>It's required by the API contract</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Without complete history, the model loses context across turns</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>Without complete history, the model loses context across turns</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>To comply with rate limits</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>To reduce token usage</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Appending every tool call, result, and model response preserves context so the model can reason across multiple turns.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> What does <code>max_iterations</code> protect against?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Network timeouts</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Infinite tool-calling loops</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>Infinite tool-calling loops</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>API key expiration</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Token limits</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — <code>max_iterations</code> prevents the agent from calling tools indefinitely without producing a final answer.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What <code>finish_reason</code> indicates the model wants to call a tool?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span><code>stop</code></span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="b"> <span><code>length</code></span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span><code>tool_calls</code></span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="c"> <span><code>tool_calls</code></span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span><code>content_filter</code></span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — When the finish_reason is <code>tool_calls</code>, the model has requested one or more function calls to execute.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> How does parallel tool execution work in the agent pattern?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>The model calls one tool at a time in sequence</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>The model returns multiple <code>tool_calls</code> in a single response</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>The model returns multiple <code>tool_calls</code> in a single response</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Tools run automatically in the background</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Multiple models execute tools simultaneously</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The model can return an array of <code>tool_calls</code>, allowing you to execute multiple tools in parallel before sending results back.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="17-multimodal-inputs.html" class="btn btn-outline">← Previous: Multimodal Inputs</a>
       <a href="19-message-transforms.html" class="btn btn-primary">Next: Message Transforms →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

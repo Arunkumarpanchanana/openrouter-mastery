@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="expert-32">
       <input type="checkbox" id="complete-e32">
       <label for="complete-e32" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>OpenAI Compatibility</h3>
@@ -61,8 +61,8 @@
 
       <h3>Community Integrations</h3>
       <p>OpenRouter integrates with Zapier (8000+ app automations), Replit (bring your own key), LiveKit (voice AI), and the Effect AI SDK. The community-maintained "Awesome OpenRouter" list catalogs hundreds of projects and apps built on OpenRouter.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>View the configuration patterns for popular frameworks:</p>
@@ -109,70 +109,66 @@ print(vercel_code)
 "</code></pre>
 
       <p><strong>Try this:</strong> If you have LangChain installed, run the actual code to verify that OpenRouter responses flow through LangChain's interface identically to OpenAI. The key insight is that no framework modifications are needed — just the base URL change.</p>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> Why does OpenRouter work with most AI frameworks out of the box?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>OpenRouter has a unique API that all frameworks support</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>OpenRouter is OpenAI-compatible — just change the base_url and api_key</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>OpenRouter is OpenAI-compatible — just change the base_url and api_key</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>OpenRouter's SDK wraps all major frameworks</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Frameworks automatically detect and configure OpenRouter</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — OpenRouter uses the OpenAI API format, so any framework built for OpenAI works by changing the base URL and API key.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> How do you configure LangChain to use OpenRouter?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Install a special OpenRouter LangChain package</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Set openai_api_base to https://openrouter.ai/api/v1 on ChatOpenAI</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>Set openai_api_base to https://openrouter.ai/api/v1 on ChatOpenAI</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Use a different LangChain class called ChatOpenRouter</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Create a custom LLM wrapper from scratch</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Just set the <code>openai_api_base</code> parameter — no special packages or custom wrappers needed.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> What is the Vercel AI SDK integration pattern for OpenRouter?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Use the built-in OpenRouter provider from @ai-sdk/openrouter</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Configure createOpenAI with OpenRouter's base URL</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>Configure createOpenAI with OpenRouter's base URL</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Set an environment variable OPENROUTER_BASE_URL</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Use a proxy server between Vercel AI SDK and OpenRouter</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Use <code>createOpenAI</code> with OpenRouter's base URL since the Vercel AI SDK's OpenAI provider is compatible with any OpenAI-format API.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What is the relationship between MCP servers and OpenRouter?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>MCP servers replace OpenRouter entirely</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>MCP tools can connect through OpenRouter for model access</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>MCP tools can connect through OpenRouter for model access</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>OpenRouter is built on top of MCP</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>MCP and OpenRouter are competing technologies</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — MCP tools integrate with OpenRouter for model access, combining structured tool protocols with flexible model routing.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> Which community integration allows OpenRouter to connect with 8000+ apps?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Replit</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Zapier</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>Zapier</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>LiveKit</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Effect AI SDK</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Zapier connects OpenRouter with 8000+ app automations, making it easy to build no-code AI workflows.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="31-advanced-features.html" class="btn btn-outline">← Previous: Advanced Features</a>
       <a href="33-expert-capstone.html" class="btn btn-primary">Next: Capstone: Production Multi-Agent System →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

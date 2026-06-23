@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="beginner-10">
       <input type="checkbox" id="complete-b10">
       <label for="complete-b10" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>Bringing It All Together</h3>
@@ -55,8 +55,8 @@
 
       <h3>Graceful Features</h3>
       <p>Your chatbot should handle clean exit (a <code>quit</code> command), dynamic model switching without restarting (<code>model:xxx</code>), and runtime parameter changes (<code>temp:0.5</code>). Error recovery ensures one failed request doesn't crash the session.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Build a complete interactive CLI chatbot with streaming, model switching, and error recovery:</p>
@@ -133,65 +133,60 @@ if __name__ == '__main__':
 "</code></pre>
 
       <p>Save this as <code>chatbot.py</code> and run it with <code>python3 chatbot.py</code> for a persistent interactive session. Try switching models mid-conversation with <code>model:google/gemini-2.0-flash-exp:free</code>.</p>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> How does the chatbot maintain conversation context across turns?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>It stores context in a local file</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>It appends every message and response to a list sent with each request</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>It appends every message and response to a list sent with each request</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>The model remembers context automatically</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>It uses a database to store sessions</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The <code>messages</code> list grows with each turn and is sent with every request to maintain context.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> What's the purpose of the <code>system</code> message in the messages array?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>It stores the user's API key</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>It sets the bot's personality and behavioral constraints</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>It sets the bot's personality and behavioral constraints</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>It logs error messages</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>It configures network settings</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The system message defines the assistant's persona, tone, and behavioral guidelines.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> Why does the capstone chatbot use streaming?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Streaming is required for chatbot loops</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Streaming provides lower latency and better UX by showing output as it's generated</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>Streaming provides lower latency and better UX by showing output as it's generated</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Streaming reduces token costs</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Non-streaming requests don't work in loops</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Streaming gives instant feedback, making the chatbot feel responsive and interactive.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> How should the chatbot handle a failed API request during a conversation?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Crash and exit — the user can restart</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Print the error and continue the loop so the user can retry</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>Print the error and continue the loop so the user can retry</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Silently ignore the error</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Automatically restart the script</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Graceful error recovery prints the error and lets the user decide what to do next.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> What happens when you type <code>model:google/gemini-2.0-flash-exp:free</code> in the running chatbot?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>The chatbot restarts with a new session</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>The model is switched for the next request without losing conversation history</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>The model is switched for the next request without losing conversation history</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>It prints an error — you can't switch models mid-session</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>The temperature resets to default</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The <code>model:</code> command dynamically switches the model for the next request while preserving all conversation history.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="09-model-switching.html" class="btn btn-outline">← Previous: Model Switching</a>
       <a href="../../sections/beginner.html" class="btn btn-primary">🎉 Complete Beginner →</a>
@@ -199,5 +194,6 @@ if __name__ == '__main__':
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

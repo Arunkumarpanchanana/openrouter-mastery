@@ -38,19 +38,18 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
 
     <div class="completion-toggle" data-session-id="beginner-04">
       <input type="checkbox" id="complete-b04">
       <label for="complete-b04" class="toggle-label">Mark as complete</label>
     </div>
 
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>The Chat Completions Endpoint</h3>
@@ -87,9 +86,9 @@
         <li><strong>model</strong> — Which model actually served the request</li>
         <li><strong>created</strong> — Timestamp</li>
       </ul>
-    </section>
+    </div>
 
-    <section id="lab" class="session-content">
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Make your first API call using Python's <code>requests</code> library:</p>
@@ -136,66 +135,61 @@ print(response.choices[0].message.content)
 "</code></pre>
 
       <p><strong>Try this:</strong> Change the model string to <code>anthropic/claude-3-haiku:free</code> or <code>google/gemini-2.0-flash:free</code> and run the same code. Your code works with zero changes — only the model string changes!</p>
-    </section>
+    </div>
 
-    <section id="quiz" class="session-content">
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> What is the base endpoint for chat completions on OpenRouter?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>https://openrouter.ai/api/v1/completions</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>https://openrouter.ai/api/v1/chat/completions</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>https://openrouter.ai/api/v1/chat/completions</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>https://api.openrouter.ai/v1/chat</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>https://openrouter.ai/v1/chat/completions</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The chat completions endpoint is at <code>/api/v1/chat/completions</code>, matching the OpenAI API format.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> Which message roles are part of a chat completion request?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>user and assistant only</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>system, user, and assistant</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>system, user, and assistant</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>input and output</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>prompt and response</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Chat completions use system (instructions), user (input), and assistant (previous responses) roles.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> What does setting <code>base_url</code> to <code>https://openrouter.ai/api/v1</code> do for the OpenAI SDK?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>Limits you to OpenAI models only</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>Allows you to use any OpenRouter model as a drop-in replacement for OpenAI</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>Allows you to use any OpenRouter model as a drop-in replacement for OpenAI</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>Only works with free models</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Disables all OpenAI-specific features</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — OpenRouter's OpenAI compatibility means you can use the OpenAI SDK with any model by just changing the base URL.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What happens when you change the <code>model</code> string in your request?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>You need to update your authentication</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>The API call routes to a different model</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>The API call routes to a different model</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>You must restart your application</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>The request is rejected</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Changing the model string is all you need to switch models. The rest of your code stays the same.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> What Content-Type header is required for POST requests to the chat completions endpoint?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>text/plain</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>application/json</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>application/json</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>application/xml</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>multipart/form-data</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The chat completions endpoint expects JSON, so the Content-Type must be <code>application/json</code>.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
 
     <nav class="prev-next">
       <a href="03-models-ecosystem.html" class="btn btn-outline">← Previous: The Models Ecosystem</a>
@@ -204,5 +198,6 @@ print(response.choices[0].message.content)
   </main>
 
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

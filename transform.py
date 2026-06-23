@@ -19,7 +19,7 @@ TAB_BAR = '''    <div class="tab-bar" role="tablist">
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">\U0001f4dd Quiz</button>
     </div>'''
 
-SESSION_JS_REF = '\n    <script src="../../assets/js/session.js"></script>'
+SESSION_JS_REF = '\n  <script src="../../assets/js/session.js"></script>'
 PROGRESS_JS_PATTERN = '<script src="../../assets/js/progress.js"></script>'
 
 
@@ -72,8 +72,20 @@ def remove_page_nav(html):
     )
 
 
+def remove_tab_bars(html):
+    """Remove any existing tab-bar elements."""
+    return re.sub(
+        r'\s*<div class="tab-bar" role="tablist">.*?</div>',
+        '',
+        html,
+        flags=re.DOTALL
+    )
+
+
 def add_tab_bar(html):
     """Insert tab-bar div after the session-meta div."""
+    if '<div class="tab-bar"' in html:
+        return html
     return re.sub(
         r'(<div class="session-meta">.*?</div>)',
         r'\1\n' + TAB_BAR,
@@ -83,16 +95,16 @@ def add_tab_bar(html):
 
 
 def wrap_sections(html):
-    """Wrap learn/lab/quiz sections in tab-content divs."""
-    def replace_section(match):
+    """Wrap learn/lab/quiz sections in tab-content divs (preserving original section)."""
+    def wrap_section(match):
         section_id = match.group(1)
-        content = match.group(2)
+        section_html = match.group(0)
         active = ' active' if section_id == 'learn' else ''
-        return f'<div id="tab-{section_id}" class="tab-content{active}" role="tabpanel">{content}</div>'
+        return f'<div id="tab-{section_id}" class="tab-content{active}" role="tabpanel">{section_html}</div>'
 
     html = re.sub(
-        r'<section id="(learn|lab|quiz)" class="session-content">(.*?)</section>',
-        replace_section,
+        r'<section id="(learn|lab|quiz)"[^>]*>.*?</section>',
+        wrap_section,
         html,
         flags=re.DOTALL
     )
@@ -101,8 +113,7 @@ def wrap_sections(html):
 
 def add_session_js(html):
     """Add session.js reference after progress.js if not already present."""
-    if 'session.js' in html:
-        return html
+    html = re.sub(r'\s*<script src="../../assets/js/session\.js"></script>', '', html)
     return html.replace(PROGRESS_JS_PATTERN, PROGRESS_JS_PATTERN + SESSION_JS_REF)
 
 
@@ -111,6 +122,7 @@ def transform_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
         html = f.read()
 
+    html = remove_tab_bars(html)
     html = transform_quiz(html)
     html = remove_page_nav(html)
     html = add_tab_bar(html)

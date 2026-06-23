@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="intermediate-12">
       <input type="checkbox" id="complete-i12">
       <label for="complete-i12" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>What Are Tools?</h3>
@@ -77,8 +77,8 @@
 
       <h3>Parallel Tool Calls</h3>
       <p>Models can request multiple tools in a single response when <code>parallel_tool_calls</code> is enabled (default: true). This is useful for gathering independent data points simultaneously. The finish reason will be <code>"tool_calls"</code> when the model wants to use tools.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Build a weather tool calling example with a mock function:</p>
@@ -147,70 +147,66 @@ else:
 "</code></pre>
 
       <p><strong>Try this:</strong> Add more cities to the mock data and ask about them. Experiment with <code>tool_choice: "required"</code> to force the model to always use the tool.</p>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> Who executes the tool call — the model or the developer?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>The model executes it automatically</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>The developer executes it and returns results to the model</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>The developer executes it and returns results to the model</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>OpenRouter executes it server-side</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>It depends on the model provider</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The model suggests the call, but the developer must execute it and send results back.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> What is the most important field in a tool definition to help the model choose correctly?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>name</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>description</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>description</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>type</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>required</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The description tells the model what the tool does and when to use it. A vague description leads to wrong tool choices.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> What does <code>tool_choice: "required"</code> do?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>The model must call every available tool</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>The model must call at least one tool on every turn</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>The model must call at least one tool on every turn</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>The model can only call tools once</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>Tools are ignored entirely</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — "required" forces the model to use at least one tool — it cannot respond with plain text.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What finish reason indicates the model wants to call a tool?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>stop</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>length</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>tool_calls</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="c"> <span>tool_calls</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>function_call</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — The finish_reason "tool_calls" means the model wants to invoke one or more tools.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> What is parallel tool calling?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Running tools in sequence, one after another</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>The model requests multiple independent tool calls in a single response</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>The model requests multiple independent tool calls in a single response</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Using the same tool multiple times with the same arguments</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Running the same request on multiple models simultaneously</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Parallel tool calls let the model request multiple independent functions at once, which you execute and return together.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="11-structured-outputs-json-schema.html" class="btn btn-outline">← Previous: Structured Outputs & JSON Schema</a>
       <a href="13-client-sdks-python.html" class="btn btn-primary">Next: Client SDKs (Python) →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

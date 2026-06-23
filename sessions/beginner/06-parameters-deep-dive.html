@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="beginner-06">
       <input type="checkbox" id="complete-b06">
       <label for="complete-b06" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>temperature</h3>
@@ -71,8 +71,8 @@
       <h3>presence_penalty</h3>
       <p><strong>Range:</strong> -2.0 – 2.0</p>
       <p>Penalizes tokens that have appeared at all in the text, regardless of frequency. Higher values encourage the model to talk about new topics and introduce more diversity.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Experiment with parameters to see how they change the model's output:</p>
@@ -108,70 +108,66 @@ for i in range(2):
     })
     print(f'Run {i+1}: {resp.json()[\"choices\"][0][\"message\"][\"content\"][:80]}...')
 "</code></pre>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> What happens to output as temperature approaches 0?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Output becomes more creative and varied</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Output becomes deterministic and focused</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>Output becomes deterministic and focused</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Output length increases</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Output becomes random</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Low temperature makes the model deterministic and repetitive, always picking the most likely next token.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> Are you charged for the <code>max_tokens</code> value or the actual tokens generated?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>You're charged for max_tokens regardless</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>You're charged only for the tokens actually generated</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>You're charged only for the tokens actually generated</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>You're charged the higher of the two</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>max_tokens doesn't affect cost</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — You only pay for what the model actually generates, not the max_tokens ceiling.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> What is the relationship between <code>top_p</code> and <code>temperature</code>?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>They should always be used together</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>They are alternative ways to control randomness — typically adjust one, not both</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>They are alternative ways to control randomness — typically adjust one, not both</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>top_p overrides temperature completely</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>They are unrelated parameters</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Both control randomness but in different ways. It's recommended to tune one at a time.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> Does the <code>seed</code> parameter guarantee identical outputs every time?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Yes, it's a hard guarantee</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>No, it's best-effort and not all models support it fully</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="b"> <span>No, it's best-effort and not all models support it fully</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>It only works with temperature at 0</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>It guarantees determinism only for the first request</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Seed is a best-effort feature. Many models support it, but it's not guaranteed across all providers or configurations.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> What do stop sequences do?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Stop the model from using certain words</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Halt generation when specific text is encountered</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>Halt generation when specific text is encountered</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Prevent the model from repeating itself</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Limit the total number of API calls</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Stop sequences tell the model to stop generating as soon as it outputs the specified string(s).</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="05-understanding-responses.html" class="btn btn-outline">← Previous: Understanding Responses</a>
       <a href="07-error-handling.html" class="btn btn-primary">Next: Error Handling →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

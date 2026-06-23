@@ -1,0 +1,136 @@
+<h2>Tabbed Layout — Detailed Design</h2>
+<p class="subtitle">Each session page gets a completely new look</p>
+
+<div class="section">
+  <h3>Top of page</h3>
+  <div style="background: #1F2937; border-radius: 8px; padding: 1.25rem; color: #fff;">
+    <div style="display:flex; gap: 1rem; border-bottom: 1px solid #374151; padding-bottom: 0.75rem;">
+      <span>Home</span>
+      <span style="color: #8B5CF6;">Beginner</span>
+      <span>Intermediate</span>
+      <span>Expert</span>
+    </div>
+    <div style="margin-top: 1rem; font-size: 0.85rem; color: #9CA3AF;">
+      <span>Home &rsaquo; Beginner &rsaquo; Session 04</span>
+    </div>
+    <h3 style="color: #fff; margin: 0.75rem 0 0.25rem 0;">Session 04: Your First API Call</h3>
+    <div style="display:flex; gap: 0.75rem; font-size: 0.8rem; color: #9CA3AF;">
+      <span>&#9200; 25 min</span>
+      <span>&#9679; Beginner</span>
+      <span>&#128218; 1 Quiz</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Tab Bar (sticky)</h3>
+  <div style="display:flex; gap: 0; border-radius: 8px; overflow: hidden; border: 1px solid #E5E7EB;">
+    <div style="flex: 1; background: #6A3DE8; color: #fff; padding: 0.75rem 1rem; text-align: center; font-weight: 600;">
+      <span>&#128214;</span> Learn
+    </div>
+    <div style="flex: 1; background: #F9FAFB; color: #6B7280; padding: 0.75rem 1rem; text-align: center;">
+      <span>&#128300;</span> Lab
+    </div>
+    <div style="flex: 1; background: #F9FAFB; color: #6B7280; padding: 0.75rem 1rem; text-align: center;">
+      <span>&#128221;</span> Quiz
+    </div>
+  </div>
+  <p style="font-size: 0.85rem; color: #6B7280; margin-top: 0.5rem;">Active tab is highlighted in purple. Click to switch.</p>
+</div>
+
+<div class="section">
+  <h3>Learn Tab (default view)</h3>
+  <div style="display:flex; gap: 1.5rem;">
+    <div style="flex: 3;">
+      <div style="background: #F5F0FF; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+        <strong>&#128161; Key Concept</strong>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">An API call sends a request to a server and receives a response. Think of it like ordering at a restaurant...</p>
+      </div>
+      <div style="background: #F9FAFB; border-radius: 8px; padding: 1rem; font-family: monospace; font-size: 0.85rem;">
+        <div style="display:flex; justify-content:space-between;">
+          <span>curl https://openrouter.ai/api/v1/chat/completions</span>
+          <button style="background: #6A3DE8; color: #fff; border: none; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem;">Copy</button>
+        </div>
+      </div>
+    </div>
+    <div style="flex: 1; background: #F9FAFB; border-radius: 8px; padding: 1rem; font-size: 0.85rem;">
+      <strong>In this session</strong>
+      <ul style="padding-left: 1.25rem; margin: 0.5rem 0 0 0;">
+        <li>What is an API call?</li>
+        <li>Anatomy of a request</li>
+        <li>Headers and auth</li>
+        <li>Understanding responses</li>
+        <li>Common patterns</li>
+      </ul>
+    </div>
+  </div>
+  <p style="font-size: 0.85rem; color: #6B7280; margin-top: 0.5rem;">Sidebar on right shows session outline with scroll-spy highlighting.</p>
+</div>
+
+<div class="section">
+  <h3>Lab Tab (when active)</h3>
+  <div style="background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 8px; padding: 1.5rem;">
+    <div style="background: #FFEDD5; border-radius: 4px; padding: 0.25rem 0.75rem; display: inline-block; font-size: 0.8rem; font-weight: 600; color: #C2410C;">LAB</div>
+    <p style="margin: 0.75rem 0;"><strong>Step 1:</strong> Set up your environment</p>
+    <div style="background: #1F2937; border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.85rem; color: #E5E7EB;">
+      <div>export OPENROUTER_API_KEY="sk-..."</div>
+    </div>
+    <p style="margin: 0.75rem 0;"><strong>Step 2:</strong> Make your first request</p>
+  </div>
+  <p style="font-size: 0.85rem; color: #6B7280; margin-top: 0.5rem;">Warm orange background distinguishes Lab from Learn.</p>
+</div>
+
+<div class="section">
+  <h3>Quiz Tab (when active)</h3>
+  <div style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border: 1px solid #A7F3D0; border-radius: 8px; padding: 1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div style="background: #D1FAE5; border-radius: 4px; padding: 0.25rem 0.75rem; display: inline-block; font-size: 0.8rem; font-weight: 600; color: #047857;">QUIZ</div>
+      <span style="font-size: 0.85rem; color: #047857;">Score: 0 / 5</span>
+    </div>
+    <div style="margin-top: 1rem;">
+      <p><strong>1. What does an API key do?</strong></p>
+      <label style="display:block; margin: 0.5rem 0; padding: 0.5rem; background: #fff; border-radius: 4px;"><input type="radio" name="q1"> A) Encrypts your data</label>
+      <label style="display:block; margin: 0.5rem 0; padding: 0.5rem; background: #fff; border-radius: 4px; border: 2px solid #6A3DE8;"><input type="radio" name="q1"> B) Authenticates your requests <span style="color: #10B981; font-weight:600;">&#10003;</span></label>
+      <label style="display:block; margin: 0.5rem 0; padding: 0.5rem; background: #fff; border-radius: 4px;"><input type="radio" name="q1"> C) Formats the response</label>
+      <label style="display:block; margin: 0.5rem 0; padding: 0.5rem; background: #fff; border-radius: 4px;"><input type="radio" name="q1"> D) Sets the model name</label>
+    </div>
+    <button style="background: #10B981; color: #fff; border: none; border-radius: 6px; padding: 0.5rem 1.5rem; margin-top: 0.75rem; font-weight: 600;">Submit &amp; Check</button>
+  </div>
+  <p style="font-size: 0.85rem; color: #6B7280; margin-top: 0.5rem;">Green theme for quiz. Clicking Submit shows correct/incorrect and final score.</p>
+</div>
+
+<div class="section">
+  <h3>Prev / Next Navigation</h3>
+  <div style="display:flex; justify-content:space-between; background: #F9FAFB; border-radius: 8px; padding: 1rem;">
+    <div>
+      <div style="font-size: 0.75rem; color: #6B7280;">&larr; PREVIOUS</div>
+      <div style="font-weight: 600;">Session 03: Models Ecosystem</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size: 0.75rem; color: #6B7280;">NEXT &rarr;</div>
+      <div style="font-weight: 600;">Session 05: Understanding Responses</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Landing page changes</h3>
+  <div style="display:flex; gap: 1rem;">
+    <div style="flex:1; background: #F9FAFB; border-radius: 8px; padding: 1rem; text-align:center;">
+      <div style="background: #6A3DE8; width: 32px; height: 32px; border-radius: 8px; margin: 0 auto 0.5rem;"></div>
+      <strong>Beginner</strong>
+      <div style="font-size: 0.8rem; color: #6B7280;">10 sessions</div>
+    </div>
+    <div style="flex:1; background: #F9FAFB; border-radius: 8px; padding: 1rem; text-align:center;">
+      <div style="background: #F59E0B; width: 32px; height: 32px; border-radius: 8px; margin: 0 auto 0.5rem;"></div>
+      <strong>Intermediate</strong>
+      <div style="font-size: 0.8rem; color: #6B7280;">11 sessions</div>
+    </div>
+    <div style="flex:1; background: #F9FAFB; border-radius: 8px; padding: 1rem; text-align:center;">
+      <div style="background: #10B981; width: 32px; height: 32px; border-radius: 8px; margin: 0 auto 0.5rem;"></div>
+      <strong>Expert</strong>
+      <div style="font-size: 0.8rem; color: #6B7280;">12 sessions</div>
+    </div>
+  </div>
+  <p style="font-size: 0.85rem; color: #6B7280; margin-top: 0.5rem;">Each track gets its own accent color (purple / amber / green).</p>
+</div>

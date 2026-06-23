@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="intermediate-14">
       <input type="checkbox" id="complete-i14">
       <label for="complete-i14" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>Default Routing Behavior</h3>
@@ -64,8 +64,8 @@
         <li><strong><code>data_collection</code></strong> — Set to <code>"deny"</code> to exclude providers that store your data</li>
         <li><strong><code>max_price</code></strong> — Set maximum prompt/completion price you're willing to pay</li>
       </ul>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Compare different routing strategies side by side:</p>
@@ -98,8 +98,8 @@ for strategy in routing_strategies:
 "</code></pre>
 
       <p><strong>Try this:</strong> Add a strategy with <code>max_price</code> to cap costs. Add <code>allow_fallbacks: false</code> to see what happens when the primary provider is unavailable.</p>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
@@ -107,61 +107,57 @@ for strategy in routing_strategies:
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Always use OpenAI first</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Random provider selection</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Load balancing with inverse square weighting, prioritizing price</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="c"> <span>Load balancing with inverse square weighting, prioritizing price</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Always use the fastest provider</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — Default routing uses inverse square weighting across providers, with cheapest getting the most traffic.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> What does <code>provider.sort: "throughput"</code> do?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>Picks the provider with the cheapest price</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>Picks providers with the highest tokens/second</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>Picks providers with the highest tokens/second</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>Routes to all providers simultaneously</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>Sorts by alphabetical order</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — Throughput sort prioritizes providers with the highest tokens-per-second rate.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> What is the difference between <code>provider.order</code> and <code>provider.only</code>?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>They do the same thing</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>order tries providers in sequence with fallback; only restricts exclusively to those providers</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="b"> <span>order tries providers in sequence with fallback; only restricts exclusively to those providers</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>order only works with paid models</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>only allows fallback to other providers; order does not</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — order tries your list in sequence with fallback to others if they fail; only restricts exclusively to the listed providers.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What does setting <code>allow_fallbacks: false</code> accomplish?</p>
         <div class="options">
-          <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>The request fails if the primary provider is unavailable</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="a"> <span>The request fails if the primary provider is unavailable</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>The request uses all providers in parallel</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Only free models are used</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>It enables automatic retry on failure</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>a</strong> — allow_fallbacks: false prevents fallback, so the request fails if the primary provider can't serve it.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> What does <code>max_price</code> do in the provider configuration?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>Sets the maximum number of tokens to generate</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>Sets the maximum prompt/completion price you're willing to pay</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>Sets the maximum prompt/completion price you're willing to pay</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>Limits the total cost per day</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>Enables free models only</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — max_price caps the per-request cost by excluding providers that exceed your price threshold.</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="13-client-sdks-python.html" class="btn btn-outline">← Previous: Client SDKs (Python)</a>
       <a href="15-model-variants.html" class="btn btn-primary">Next: Model Variants →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>

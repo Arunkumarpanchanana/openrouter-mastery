@@ -32,16 +32,16 @@
       <span class="meta-item divider">·</span>
       <span class="meta-item">📝 5 Quiz Questions</span>
     </div>
-    <nav class="page-nav">
-      <a href="#learn">📖 Learn</a>
-      <a href="#lab">🔬 Lab</a>
-      <a href="#quiz">📝 Quiz</a>
-    </nav>
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn" onclick="switchTab('learn')">📖 Learn</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="lab" onclick="switchTab('lab')">🔬 Lab</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="quiz" onclick="switchTab('quiz')">📝 Quiz</button>
+    </div>
     <div class="completion-toggle" data-session-id="intermediate-15">
       <input type="checkbox" id="complete-i15">
       <label for="complete-i15" class="toggle-label">Mark as complete</label>
     </div>
-    <section id="learn" class="session-content">
+    <div id="tab-learn" class="tab-content active" role="tabpanel">
       <h2>Learn</h2>
 
       <h3>Model Variant Suffixes</h3>
@@ -60,8 +60,8 @@
 
       <h3>How Variants Work</h3>
       <p>Variants are shorthand for provider routing configuration. <code>:nitro</code> and <code>:floor</code> map directly to <code>provider.sort</code> options. <code>:online</code> and <code>:thinking</code> enable specific model capabilities. <code>:free</code> restricts to zero-cost providers.</p>
-    </section>
-    <section id="lab" class="session-content">
+    </div>
+    <div id="tab-lab" class="tab-content" role="tabpanel">
       <h2>Lab</h2>
 
       <p>Compare the same type of task across different free model variants:</p>
@@ -91,70 +91,66 @@ for variant in variants:
 "</code></pre>
 
       <p><strong>Try this:</strong> Compare the same model with and without the <code>:extended</code> variant on a long-context task. Or test <code>:nitro</code> vs default routing and measure the latency difference.</p>
-    </section>
-    <section id="quiz" class="session-content">
+    </div>
+    <div id="tab-quiz" class="tab-content" role="tabpanel">
       <h2>Quiz</h2>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q1.</strong> What does the <code>:free</code> variant do?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q1" value="a"> <span>Removes all rate limits</span></label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> <span>Provides zero-cost inference on select community models</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q1" value="b"> <span>Provides zero-cost inference on select community models</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="c"> <span>Gives unlimited API credits</span></label>
           <label class="quiz-option"><input type="radio" name="q1" value="d"> <span>Bypasses authentication</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — The :free variant routes to community-hosted models at no cost, though rate limits apply.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q2.</strong> What is the <code>:nitro</code> variant equivalent to in provider routing?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q2" value="a"> <span>provider.sort: "price"</span></label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> <span>provider.sort: "throughput"</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q2" value="b"> <span>provider.sort: "throughput"</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="c"> <span>provider.order: ["openai"]</span></label>
           <label class="quiz-option"><input type="radio" name="q2" value="d"> <span>allow_fallbacks: false</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — :nitro is equivalent to provider.sort: "throughput", prioritizing the fastest providers.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q3.</strong> Which variant enables real-time web search?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q3" value="a"> <span>:nitro</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="b"> <span>:thinking</span></label>
-          <label class="quiz-option"><input type="radio" name="q3" value="c"> <span>:online</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q3" value="c"> <span>:online</span></label>
           <label class="quiz-option"><input type="radio" name="q3" value="d"> <span>:extended</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — :online enables real-time web search, allowing the model to search and cite sources.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q4.</strong> What does <code>:exacto</code> prioritize?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q4" value="a"> <span>Lowest price</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="b"> <span>Highest throughput</span></label>
-          <label class="quiz-option"><input type="radio" name="q4" value="c"> <span>Providers with stronger tool-calling quality signals</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q4" value="c"> <span>Providers with stronger tool-calling quality signals</span></label>
           <label class="quiz-option"><input type="radio" name="q4" value="d"> <span>Longest context windows</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>c</strong> — :exacto prefers providers that have demonstrated higher tool-calling reliability.</p></details>
-      </div>
+        </div>
 
       <div class="quiz-question">
         <p class="question-text"><strong>Q5.</strong> Which variant is equivalent to <code>provider.sort: "price"</code>?</p>
         <div class="options">
           <label class="quiz-option"><input type="radio" name="q5" value="a"> <span>:free</span></label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> <span>:floor</span></label>
+          <label class="quiz-option" data-correct="true"><input type="radio" name="q5" value="b"> <span>:floor</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="c"> <span>:nitro</span></label>
           <label class="quiz-option"><input type="radio" name="q5" value="d"> <span>:extended</span></label>
         </div>
-        <details class="quiz-answer"><summary>Show answer</summary><p><strong>b</strong> — :floor sorts providers by price (cheapest first), equivalent to provider.sort: "price".</p></details>
-      </div>
-    </section>
+        </div>
+    </div>
     <nav class="prev-next">
       <a href="14-provider-routing-fallbacks.html" class="btn btn-outline">← Previous: Provider Routing & Fallbacks</a>
       <a href="16-server-tools.html" class="btn btn-primary">Next: Server Tools →</a>
     </nav>
   </main>
   <script src="../../assets/js/progress.js"></script>
+  <script src="../../assets/js/session.js"></script>
 </body>
 </html>
